@@ -6,6 +6,9 @@
 package Vista;
 
 import Controlador.GestionBD;
+import java.awt.Color;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /**
  *
@@ -13,15 +16,45 @@ import Controlador.GestionBD;
  */
 public class MainWindow extends javax.swing.JFrame {
 
+    private PanelConexion panelConexion;
+    private String actualUser;
    
     public MainWindow() {
         initComponents();
         
-        GestionBD.conectarConMySQL();
+        conexionConLasBasesDeDatos();
         
-        GestionBD.conectarConPostgreSQL();
+        panelConexion = new PanelConexion(this);
         
-        
+        reset();
+    }
+    
+    private void reset()
+    {
+        connectionMenu.setForeground(Color.red);
+        mainMenu.setEnabled(false);
+        disconnectionButton.setEnabled(false);
+        this.setContentPane(panelConexion);
+    }
+    
+    private void conexionConLasBasesDeDatos()
+    {
+        GestionBD.connectToDataBase();
+    }
+    
+    public void conexionRealizada(String usuario)
+    {
+        actualUser = usuario;
+        connectionButton.setEnabled(false);
+        disconnectionButton.setEnabled(true);
+        mainMenu.setEnabled(true);
+        connectionMenu.setForeground(Color.GREEN);
+        cambiarContenedor(new JPanel());
+    }
+    
+    private void cambiarContenedor(JPanel aux){
+        this.setContentPane(aux);
+        pack();
     }
 
     /**
@@ -34,25 +67,36 @@ public class MainWindow extends javax.swing.JFrame {
     private void initComponents() {
 
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
+        connectionMenu = new javax.swing.JMenu();
+        connectionButton = new javax.swing.JMenuItem();
+        disconnectionButton = new javax.swing.JMenuItem();
+        mainMenu = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(600, 600));
 
-        jMenu1.setText("Conexion");
+        connectionMenu.setText("Conexion");
 
-        jMenuItem1.setText("Connect");
-        jMenu1.add(jMenuItem1);
+        connectionButton.setText("Connect");
+        connectionButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                connectionButtonActionPerformed(evt);
+            }
+        });
+        connectionMenu.add(connectionButton);
 
-        jMenuItem2.setText("Disconnect");
-        jMenu1.add(jMenuItem2);
+        disconnectionButton.setText("Disconnect");
+        disconnectionButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                disconnectionButtonActionPerformed(evt);
+            }
+        });
+        connectionMenu.add(disconnectionButton);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar1.add(connectionMenu);
 
-        jMenu2.setText("Main menu");
-        jMenuBar1.add(jMenu2);
+        mainMenu.setText("Main menu");
+        jMenuBar1.add(mainMenu);
 
         setJMenuBar(jMenuBar1);
 
@@ -69,6 +113,27 @@ public class MainWindow extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void disconnectionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_disconnectionButtonActionPerformed
+        if(GestionBD.getConnectionState())
+        {
+            int yes=JOptionPane.showConfirmDialog(null, "¿Desea desconectarse?");
+            if(yes==0)
+            {
+                //GestionBD.closeConnectionToDataBase();
+                //resetea la ventana
+                actualUser = null;
+                reset();
+                //resetea el panel visualizar por si se encuentra en el panel insertar alumno
+                //JPanelVisualizar.reset();
+                
+            }
+        }
+    }//GEN-LAST:event_disconnectionButtonActionPerformed
+
+    private void connectionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectionButtonActionPerformed
+        cambiarContenedor(panelConexion);
+    }//GEN-LAST:event_connectionButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -106,10 +171,10 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuItem connectionButton;
+    private javax.swing.JMenu connectionMenu;
+    private javax.swing.JMenuItem disconnectionButton;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenu mainMenu;
     // End of variables declaration//GEN-END:variables
 }

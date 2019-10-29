@@ -15,6 +15,60 @@ public class GestionBD {
     
     private static Connection conectionPostgres = null;
     private static Connection conectionMySQL = null;
+    private static boolean connectedToMySQL;
+    private static boolean connectedToPostgreSQL;
+    private static boolean connected;
+    
+    private static PreparedStatement statementDeValidacionPost;
+    private static PreparedStatement statementDeValidacionMys;
+    
+    public static void connectToDataBase()
+    {
+        String consulta ="select * from cuenta where usuario = ? and password = ?";
+        
+        conectarConMySQL();
+        conectarConPostgreSQL();
+        
+        try
+        {
+            statementDeValidacionPost = conectionPostgres.prepareStatement(consulta);
+            statementDeValidacionMys = conectionMySQL.prepareStatement(consulta);
+        }
+        catch(SQLException ex)
+        {
+            
+        }
+        
+    }
+    
+    public static boolean validateConnection(String user, String pass)
+    {
+        ResultSet mys;
+        ResultSet pos;
+        try
+        {
+            statementDeValidacionPost.setString(1, user);
+            statementDeValidacionPost.setString(2, pass);
+            
+            statementDeValidacionMys.setString(1, user);
+            statementDeValidacionMys.setString(2, pass);
+            
+            pos = statementDeValidacionPost.executeQuery();
+            mys = statementDeValidacionMys.executeQuery();
+            
+            if(pos.next() && mys.next())
+            {
+                System.out.println("\nValidacion correcta");
+                return true;
+            }
+        }
+        catch(SQLException ex)
+        {
+            
+        }
+            
+        return false;
+    }
     
     public static boolean conectarConMySQL()
     {
@@ -36,7 +90,8 @@ public class GestionBD {
             
             
             System.out.println("Se ha realizado la conexion con mysql");
-            
+            connectedToMySQL = true;
+            checkConnectionState();
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
             System.out.println("\nConexion incorrecta con mysql");
@@ -57,7 +112,8 @@ public class GestionBD {
             
             System.out.println("Se ha realizado la conexion con postgres ");
             
-            
+            connectedToPostgreSQL = true;
+            checkConnectionState();
         } catch (Exception e) {
             System.out.println("\nConexion incorrecta con postgres");
             //System.out.println("Ocurrio un error : "+e.getMessage());
@@ -66,6 +122,41 @@ public class GestionBD {
         
         //connected = true;
         return true;
+    }
+    
+    private static void checkConnectionState()
+    {
+        if(connectedToMySQL && connectedToPostgreSQL)
+        {
+            connected = true;
+        }
+    }
+    
+    public static void closeConnectionToDataBase() 
+    {
+        try
+        {
+            conectionMySQL.commit();
+            conectionMySQL.close();
+            connectedToMySQL = false;
+            
+            conectionPostgres.commit();
+            conectionPostgres.close();
+            connectedToPostgreSQL = false;
+            
+            connected = false;
+            
+        }
+        catch(SQLException e)
+        {
+            System.out.println("\nNo se ha podido cerrar la conexión");
+        }
+        
+    }
+    
+    public static boolean getConnectionState()
+    {
+        return connected;
     }
     
 }
