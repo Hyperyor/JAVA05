@@ -6,6 +6,7 @@
 package Vista;
 
 import Controlador.GestionBD;
+import Modelo.ConsultasLibros;
 import java.awt.Color;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -18,6 +19,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private PanelConexion panelConexion;
     private String actualUser;
+    private PanelVisualizar pVisualizar;
    
     public MainWindow() {
         initComponents();
@@ -49,7 +51,14 @@ public class MainWindow extends javax.swing.JFrame {
         disconnectionButton.setEnabled(true);
         mainMenu.setEnabled(true);
         connectionMenu.setForeground(Color.GREEN);
-        cambiarContenedor(new JPanel());
+        cambiarAVisualizar();
+        
+    }
+    
+    public void cambiarAVisualizar()
+    {
+        pVisualizar = new PanelVisualizar(actualUser, this);
+        cambiarContenedor(pVisualizar);
     }
     
     private void cambiarContenedor(JPanel aux){
@@ -71,6 +80,7 @@ public class MainWindow extends javax.swing.JFrame {
         connectionButton = new javax.swing.JMenuItem();
         disconnectionButton = new javax.swing.JMenuItem();
         mainMenu = new javax.swing.JMenu();
+        visualizarDatosButton = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(600, 600));
@@ -96,6 +106,15 @@ public class MainWindow extends javax.swing.JFrame {
         jMenuBar1.add(connectionMenu);
 
         mainMenu.setText("Main menu");
+
+        visualizarDatosButton.setText("Visualizar Biblioteca");
+        visualizarDatosButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                visualizarDatosButtonActionPerformed(evt);
+            }
+        });
+        mainMenu.add(visualizarDatosButton);
+
         jMenuBar1.add(mainMenu);
 
         setJMenuBar(jMenuBar1);
@@ -134,6 +153,10 @@ public class MainWindow extends javax.swing.JFrame {
     private void connectionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectionButtonActionPerformed
         cambiarContenedor(panelConexion);
     }//GEN-LAST:event_connectionButtonActionPerformed
+
+    private void visualizarDatosButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_visualizarDatosButtonActionPerformed
+        cambiarAVisualizar();
+    }//GEN-LAST:event_visualizarDatosButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -176,5 +199,6 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem disconnectionButton;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenu mainMenu;
+    private javax.swing.JMenuItem visualizarDatosButton;
     // End of variables declaration//GEN-END:variables
 }

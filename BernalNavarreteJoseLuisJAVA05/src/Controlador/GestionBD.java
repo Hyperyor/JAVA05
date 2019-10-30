@@ -41,6 +41,22 @@ public class GestionBD {
         
     }
     
+    public static PreparedStatement getLibroPreparedStatement(String query)
+    {
+        PreparedStatement stmt = null;
+        try
+        {
+            stmt = conectionPostgres.prepareStatement(query, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        }
+        catch(SQLException ex)
+        {
+            
+        }
+        
+        
+        return stmt;
+    }
+    
     public static boolean validateConnection(String user, String pass)
     {
         ResultSet mys;

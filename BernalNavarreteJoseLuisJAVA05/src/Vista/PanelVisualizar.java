@@ -5,6 +5,16 @@
  */
 package Vista;
 
+import Modelo.ConsultasLibros;
+import Modelo.Libro;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Calendar;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+
 /**
  *
  * @author alumno
@@ -14,8 +24,92 @@ public class PanelVisualizar extends javax.swing.JPanel {
     /**
      * Creates new form PanelVisualizar
      */
-    public PanelVisualizar() {
+    
+    private ConsultasLibros consulLibros;
+    private MainWindow ventanaPrincipal;
+    private Libro libroActual;
+    
+    public PanelVisualizar(String usuario, MainWindow princip) {
         initComponents();
+        ventanaPrincipal = princip;
+        consulLibros = new ConsultasLibros(usuario);
+        
+        libroActual = consulLibros.getFirstBook();
+        
+        //si hay al menos un libro
+        if(libroActual != null)
+        {
+            panelMensajeVacio.setVisible(false);
+            rellenarDatos(libroActual);
+            controlDeBotones();
+        }
+        else
+        {
+            panelMensajeVacio.setVisible(true);
+            panelDatos.setVisible(false);
+            
+            jButtonAnterior.setEnabled(false);
+            jButtonSiguiente.setEnabled(false);
+            
+            this.revalidate();
+            this.repaint();
+            
+            
+        }
+        
+        
+    }
+    
+    private void controlDeBotones()
+    {
+        if(consulLibros.isFirstBook())
+        {
+            jButtonAnterior.setEnabled(false);
+            
+            if(consulLibros.isLastBook())
+            {
+                jButtonSiguiente.setEnabled(false);
+            }
+        }
+        else
+        {
+            if(consulLibros.isLastBook())
+            {
+                jButtonSiguiente.setEnabled(false);
+            }
+            else
+            {
+                jButtonAnterior.setEnabled(true);
+                jButtonSiguiente.setEnabled(true);
+            }
+        }
+    }
+    
+    private void rellenarDatos(Libro l)
+    {
+        jTextFieldISBN.setText(l.getIsbn());
+        jTextFieldNifAutor.setText(l.getNifPrincAutor());
+        jTextFieldPropietario.setText(l.getPropietario());
+        jTextFieldTitulo.setText(l.getTitulo());
+        jTextFieldPrecio.setText(""+l.getPrecio());
+        jDatePickerFechaPubli.getFormattedTextField().setText(""+l.getFechaPublicacion().get(Calendar.DAY_OF_MONTH)+
+                                                                "/"  +(l.getFechaPublicacion().get(Calendar.MONTH)+1)+
+                                                                "/"  +l.getFechaPublicacion().get(Calendar.YEAR));
+        
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(new File("./"+l.getPortada()));
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
+        
+        Image dimg = img.getScaledInstance(125, 150,
+        Image.SCALE_SMOOTH);
+        //poner la foto
+        portadaImagen.setIcon(new ImageIcon(dimg));
+
     }
 
     /**
@@ -27,14 +121,8 @@ public class PanelVisualizar extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        tituloLabel = new javax.swing.JLabel();
-        panelBotonesMovimiento = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        panelImagen = new javax.swing.JPanel();
-        portadaImagen = new javax.swing.JLabel();
-        changeImagePanel = new javax.swing.JPanel();
-        changeImageButton = new javax.swing.JButton();
+        panelMensajeVacio = new javax.swing.JPanel();
+        labelMensajeNoHayDatos = new javax.swing.JLabel();
         panelDatos = new javax.swing.JPanel();
         panelOtrasOpciones = new javax.swing.JPanel();
         panelRelleno = new javax.swing.JPanel();
@@ -51,52 +139,24 @@ public class PanelVisualizar extends javax.swing.JPanel {
         jTextFieldPropietario = new javax.swing.JTextField();
         jLabelFechaPubli = new javax.swing.JLabel();
         jDatePickerFechaPubli = new org.jdatepicker.JDatePicker();
+        tituloLabel = new javax.swing.JLabel();
+        panelBotonesMovimiento = new javax.swing.JPanel();
+        jButtonAnterior = new javax.swing.JButton();
+        jButtonSiguiente = new javax.swing.JButton();
+        panelImagen = new javax.swing.JPanel();
+        portadaImagen = new javax.swing.JLabel();
+        changeImagePanel = new javax.swing.JPanel();
+        changeImageButton = new javax.swing.JButton();
 
         setLayout(new java.awt.BorderLayout());
 
-        tituloLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        tituloLabel.setText("Listado de libros");
-        add(tituloLabel, java.awt.BorderLayout.PAGE_START);
+        panelMensajeVacio.setLayout(new java.awt.BorderLayout());
 
-        panelBotonesMovimiento.setLayout(new java.awt.GridLayout(1, 2));
+        labelMensajeNoHayDatos.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelMensajeNoHayDatos.setText("No existen libros para este usuario");
+        panelMensajeVacio.add(labelMensajeNoHayDatos, java.awt.BorderLayout.CENTER);
 
-        jButton1.setText("jButton1");
-        panelBotonesMovimiento.add(jButton1);
-
-        jButton2.setText("jButton2");
-        panelBotonesMovimiento.add(jButton2);
-
-        add(panelBotonesMovimiento, java.awt.BorderLayout.SOUTH);
-
-        panelImagen.setPreferredSize(new java.awt.Dimension(150, 260));
-        panelImagen.setLayout(new java.awt.GridLayout(3, 1));
-        panelImagen.add(portadaImagen);
-
-        changeImageButton.setText("Cambiar imagen");
-
-        javax.swing.GroupLayout changeImagePanelLayout = new javax.swing.GroupLayout(changeImagePanel);
-        changeImagePanel.setLayout(changeImagePanelLayout);
-        changeImagePanelLayout.setHorizontalGroup(
-            changeImagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 150, Short.MAX_VALUE)
-            .addGroup(changeImagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(changeImagePanelLayout.createSequentialGroup()
-                    .addComponent(changeImageButton)
-                    .addGap(0, 2, Short.MAX_VALUE)))
-        );
-        changeImagePanelLayout.setVerticalGroup(
-            changeImagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 86, Short.MAX_VALUE)
-            .addGroup(changeImagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, changeImagePanelLayout.createSequentialGroup()
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(changeImageButton)
-                    .addContainerGap(49, Short.MAX_VALUE)))
-        );
-
-        panelImagen.add(changeImagePanel);
-
-        add(panelImagen, java.awt.BorderLayout.LINE_END);
+        add(panelMensajeVacio, java.awt.BorderLayout.CENTER);
 
         panelDatos.setLayout(new java.awt.BorderLayout());
 
@@ -104,7 +164,7 @@ public class PanelVisualizar extends javax.swing.JPanel {
         panelOtrasOpciones.setLayout(panelOtrasOpcionesLayout);
         panelOtrasOpcionesLayout.setHorizontalGroup(
             panelOtrasOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 294, Short.MAX_VALUE)
+            .addGap(0, 301, Short.MAX_VALUE)
         );
         panelOtrasOpcionesLayout.setVerticalGroup(
             panelOtrasOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -117,7 +177,7 @@ public class PanelVisualizar extends javax.swing.JPanel {
         panelRelleno.setLayout(panelRellenoLayout);
         panelRellenoLayout.setHorizontalGroup(
             panelRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 294, Short.MAX_VALUE)
+            .addGap(0, 301, Short.MAX_VALUE)
         );
         panelRellenoLayout.setVerticalGroup(
             panelRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -171,15 +231,86 @@ public class PanelVisualizar extends javax.swing.JPanel {
         panelDatos.add(dataPanel, java.awt.BorderLayout.CENTER);
 
         add(panelDatos, java.awt.BorderLayout.CENTER);
+
+        tituloLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        tituloLabel.setText("Listado de libros");
+        add(tituloLabel, java.awt.BorderLayout.PAGE_START);
+
+        panelBotonesMovimiento.setLayout(new java.awt.GridLayout(1, 2));
+
+        jButtonAnterior.setText("Anterior");
+        jButtonAnterior.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAnteriorActionPerformed(evt);
+            }
+        });
+        panelBotonesMovimiento.add(jButtonAnterior);
+
+        jButtonSiguiente.setText("Siguiente");
+        jButtonSiguiente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSiguienteActionPerformed(evt);
+            }
+        });
+        panelBotonesMovimiento.add(jButtonSiguiente);
+
+        add(panelBotonesMovimiento, java.awt.BorderLayout.SOUTH);
+
+        panelImagen.setPreferredSize(new java.awt.Dimension(150, 260));
+        panelImagen.setLayout(new java.awt.GridLayout(2, 1));
+
+        portadaImagen.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        portadaImagen.setMaximumSize(new java.awt.Dimension(50, 50));
+        portadaImagen.setMinimumSize(new java.awt.Dimension(50, 50));
+        portadaImagen.setPreferredSize(new java.awt.Dimension(50, 50));
+        panelImagen.add(portadaImagen);
+
+        changeImageButton.setText("Cambiar imagen");
+
+        javax.swing.GroupLayout changeImagePanelLayout = new javax.swing.GroupLayout(changeImagePanel);
+        changeImagePanel.setLayout(changeImagePanelLayout);
+        changeImagePanelLayout.setHorizontalGroup(
+            changeImagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 150, Short.MAX_VALUE)
+            .addGroup(changeImagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(changeImagePanelLayout.createSequentialGroup()
+                    .addComponent(changeImageButton)
+                    .addGap(0, 2, Short.MAX_VALUE)))
+        );
+        changeImagePanelLayout.setVerticalGroup(
+            changeImagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 130, Short.MAX_VALUE)
+            .addGroup(changeImagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, changeImagePanelLayout.createSequentialGroup()
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(changeImageButton)
+                    .addContainerGap(92, Short.MAX_VALUE)))
+        );
+
+        panelImagen.add(changeImagePanel);
+
+        add(panelImagen, java.awt.BorderLayout.LINE_END);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButtonAnteriorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAnteriorActionPerformed
+        libroActual = consulLibros.previousBook();
+        rellenarDatos(libroActual);
+        controlDeBotones();
+    }//GEN-LAST:event_jButtonAnteriorActionPerformed
+
+    private void jButtonSiguienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSiguienteActionPerformed
+        libroActual = consulLibros.nextBook();
+        rellenarDatos(libroActual);
+        controlDeBotones();
+    }//GEN-LAST:event_jButtonSiguienteActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton changeImageButton;
     private javax.swing.JPanel changeImagePanel;
     private javax.swing.JPanel dataPanel;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButtonAnterior;
+    private javax.swing.JButton jButtonSiguiente;
     private org.jdatepicker.JDatePicker jDatePickerFechaPubli;
     private javax.swing.JLabel jLabelAutor;
     private javax.swing.JLabel jLabelFechaPubli;
@@ -192,9 +323,11 @@ public class PanelVisualizar extends javax.swing.JPanel {
     private javax.swing.JTextField jTextFieldPrecio;
     private javax.swing.JTextField jTextFieldPropietario;
     private javax.swing.JTextField jTextFieldTitulo;
+    private javax.swing.JLabel labelMensajeNoHayDatos;
     private javax.swing.JPanel panelBotonesMovimiento;
     private javax.swing.JPanel panelDatos;
     private javax.swing.JPanel panelImagen;
+    private javax.swing.JPanel panelMensajeVacio;
     private javax.swing.JPanel panelOtrasOpciones;
     private javax.swing.JPanel panelRelleno;
     private javax.swing.JLabel portadaImagen;
