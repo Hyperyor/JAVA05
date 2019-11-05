@@ -20,6 +20,7 @@ public class MainWindow extends javax.swing.JFrame {
     private PanelConexion panelConexion;
     private String actualUser;
     private PanelVisualizar pVisualizar;
+    private Acerca ventanaAcerca;
    
     public MainWindow() {
         initComponents();
@@ -34,7 +35,7 @@ public class MainWindow extends javax.swing.JFrame {
     private void reset()
     {
         connectionMenu.setForeground(Color.red);
-        mainMenu.setEnabled(false);
+        acercaDeButton.setEnabled(false);
         disconnectionButton.setEnabled(false);
         this.setContentPane(panelConexion);
     }
@@ -49,7 +50,7 @@ public class MainWindow extends javax.swing.JFrame {
         actualUser = usuario;
         connectionButton.setEnabled(false);
         disconnectionButton.setEnabled(true);
-        mainMenu.setEnabled(true);
+        acercaDeButton.setEnabled(true);
         connectionMenu.setForeground(Color.GREEN);
         cambiarAVisualizar();
         
@@ -79,10 +80,12 @@ public class MainWindow extends javax.swing.JFrame {
         connectionMenu = new javax.swing.JMenu();
         connectionButton = new javax.swing.JMenuItem();
         disconnectionButton = new javax.swing.JMenuItem();
-        mainMenu = new javax.swing.JMenu();
+        acercaDeButton = new javax.swing.JMenu();
         visualizarDatosButton = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("JAVA05");
         setPreferredSize(new java.awt.Dimension(600, 600));
 
         connectionMenu.setText("Conexion");
@@ -105,7 +108,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         jMenuBar1.add(connectionMenu);
 
-        mainMenu.setText("Main menu");
+        acercaDeButton.setText("Main menu");
 
         visualizarDatosButton.setText("Visualizar Biblioteca");
         visualizarDatosButton.addActionListener(new java.awt.event.ActionListener() {
@@ -113,9 +116,17 @@ public class MainWindow extends javax.swing.JFrame {
                 visualizarDatosButtonActionPerformed(evt);
             }
         });
-        mainMenu.add(visualizarDatosButton);
+        acercaDeButton.add(visualizarDatosButton);
 
-        jMenuBar1.add(mainMenu);
+        jMenuItem1.setText("Acerca de");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        acercaDeButton.add(jMenuItem1);
+
+        jMenuBar1.add(acercaDeButton);
 
         setJMenuBar(jMenuBar1);
 
@@ -158,6 +169,10 @@ public class MainWindow extends javax.swing.JFrame {
         cambiarAVisualizar();
     }//GEN-LAST:event_visualizarDatosButtonActionPerformed
 
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        ventanaAcerca=new Acerca(this, true);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -194,11 +209,12 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu acercaDeButton;
     private javax.swing.JMenuItem connectionButton;
     private javax.swing.JMenu connectionMenu;
     private javax.swing.JMenuItem disconnectionButton;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenu mainMenu;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem visualizarDatosButton;
     // End of variables declaration//GEN-END:variables
 }

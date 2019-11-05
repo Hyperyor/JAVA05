@@ -29,6 +29,8 @@ public class PanelVisualizar extends javax.swing.JPanel {
     private MainWindow ventanaPrincipal;
     private Libro libroActual;
     
+    private VerParticipantes ventanaParticipantes;
+    
     public PanelVisualizar(String usuario, MainWindow princip) {
         initComponents();
         ventanaPrincipal = princip;
@@ -125,6 +127,9 @@ public class PanelVisualizar extends javax.swing.JPanel {
         labelMensajeNoHayDatos = new javax.swing.JLabel();
         panelDatos = new javax.swing.JPanel();
         panelOtrasOpciones = new javax.swing.JPanel();
+        verParticipantesButton = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         panelRelleno = new javax.swing.JPanel();
         dataPanel = new javax.swing.JPanel();
         jLabelISBN = new javax.swing.JLabel();
@@ -160,16 +165,21 @@ public class PanelVisualizar extends javax.swing.JPanel {
 
         panelDatos.setLayout(new java.awt.BorderLayout());
 
-        javax.swing.GroupLayout panelOtrasOpcionesLayout = new javax.swing.GroupLayout(panelOtrasOpciones);
-        panelOtrasOpciones.setLayout(panelOtrasOpcionesLayout);
-        panelOtrasOpcionesLayout.setHorizontalGroup(
-            panelOtrasOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 301, Short.MAX_VALUE)
-        );
-        panelOtrasOpcionesLayout.setVerticalGroup(
-            panelOtrasOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 43, Short.MAX_VALUE)
-        );
+        panelOtrasOpciones.setLayout(new java.awt.GridLayout(2, 2));
+
+        verParticipantesButton.setText("Ver Participantes");
+        verParticipantesButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                verParticipantesButtonActionPerformed(evt);
+            }
+        });
+        panelOtrasOpciones.add(verParticipantesButton);
+
+        jButton3.setText("jButton3");
+        panelOtrasOpciones.add(jButton3);
+
+        jButton1.setText("jButton1");
+        panelOtrasOpciones.add(jButton1);
 
         panelDatos.add(panelOtrasOpciones, java.awt.BorderLayout.SOUTH);
 
@@ -177,7 +187,7 @@ public class PanelVisualizar extends javax.swing.JPanel {
         panelRelleno.setLayout(panelRellenoLayout);
         panelRellenoLayout.setHorizontalGroup(
             panelRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 301, Short.MAX_VALUE)
+            .addGap(0, 344, Short.MAX_VALUE)
         );
         panelRellenoLayout.setVerticalGroup(
             panelRellenoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -304,11 +314,17 @@ public class PanelVisualizar extends javax.swing.JPanel {
         controlDeBotones();
     }//GEN-LAST:event_jButtonSiguienteActionPerformed
 
+    private void verParticipantesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verParticipantesButtonActionPerformed
+        ventanaParticipantes = new VerParticipantes(ventanaPrincipal, true, libroActual);
+    }//GEN-LAST:event_verParticipantesButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton changeImageButton;
     private javax.swing.JPanel changeImagePanel;
     private javax.swing.JPanel dataPanel;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButtonAnterior;
     private javax.swing.JButton jButtonSiguiente;
     private org.jdatepicker.JDatePicker jDatePickerFechaPubli;
@@ -332,5 +348,6 @@ public class PanelVisualizar extends javax.swing.JPanel {
     private javax.swing.JPanel panelRelleno;
     private javax.swing.JLabel portadaImagen;
     private javax.swing.JLabel tituloLabel;
+    private javax.swing.JButton verParticipantesButton;
     // End of variables declaration//GEN-END:variables
 }

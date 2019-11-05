@@ -41,7 +41,7 @@ public class GestionBD {
         
     }
     
-    public static PreparedStatement getLibroPreparedStatement(String query)
+    public static PreparedStatement getPreparedStatement(String query)
     {
         PreparedStatement stmt = null;
         try
@@ -173,6 +173,25 @@ public class GestionBD {
     public static boolean getConnectionState()
     {
         return connected;
+    }
+    
+    //metodo que crea y devuelve un statement sensitivo, que nos permite
+    //desplazarnos por el ResultSet y actualizar los datos
+    public static Statement getSensitiveStatement()
+    {
+        Statement stmt = null;
+        
+        try
+        {
+            //ResultSet.HOLD_CURSORS_OVER_COMMIT no si se hará falta usarlo más adelante
+            stmt = conectionPostgres.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+        }
+        catch(SQLException ex)
+        {
+            System.out.println("\nError al crear el statement");
+        }
+         
+         return stmt;
     }
     
 }

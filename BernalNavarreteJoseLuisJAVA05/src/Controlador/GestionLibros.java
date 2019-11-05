@@ -24,7 +24,7 @@ public class GestionLibros {
     public GestionLibros(String query)
     {
         //preparamos el prepared statement
-        libroStatement = GestionBD.getLibroPreparedStatement(query);
+        libroStatement = GestionBD.getPreparedStatement(query);
         queryExecuted = false;
     }
     
