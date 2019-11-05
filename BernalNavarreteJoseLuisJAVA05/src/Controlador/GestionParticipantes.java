@@ -15,15 +15,20 @@ import java.util.ArrayList;
  */
 public class GestionParticipantes {
     
-    private Statement statement;
+    private PreparedStatement statement;
     private ResultSet rSet;
     
     public GestionParticipantes()
     {
-        statement = GestionBD.getSensitiveStatement();
+        
     }
     
-    public ArrayList<Participante> getListadoParticipantes(String query)
+    public void prepararStamenet(String query)
+    {
+        statement = GestionBD.getPreparedStatement(query);
+    }
+    
+    public ArrayList<Participante> getListadoParticipantes(String isbn)
     {
         ArrayList<Participante> lista = new ArrayList<Participante>();
         
@@ -31,7 +36,9 @@ public class GestionParticipantes {
         
         try
         {
-            rSet = statement.executeQuery(query);
+            statement.setString(1, isbn);
+            
+            rSet = statement.executeQuery();
             
             while(rSet.next())
             {

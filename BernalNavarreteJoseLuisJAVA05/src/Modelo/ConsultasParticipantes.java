@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 public class ConsultasParticipantes {
     
-    private String obtenerParticipantesLibro = "Select * from escribe where ISBN = ";
+    private String obtenerParticipantesLibro = "Select * from escribe where ISBN = ?;";
     
     private GestionParticipantes gestPartic;
     
@@ -28,7 +28,8 @@ public class ConsultasParticipantes {
     
     public ArrayList<Participante> getListado(Libro l)
     {
-        listadoParticipantes = gestPartic.getListadoParticipantes(obtenerParticipantesLibro + "'"+l.getIsbn()+"'" + ";");
+        gestPartic.prepararStamenet(obtenerParticipantesLibro);
+        listadoParticipantes = gestPartic.getListadoParticipantes(l.getIsbn());
         
         return listadoParticipantes;
     }

@@ -7,13 +7,21 @@ package Vista;
 
 import Modelo.ConsultasLibros;
 import Modelo.Libro;
+import com.aeat.valida.Validador;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.Calendar;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -30,6 +38,8 @@ public class PanelVisualizar extends javax.swing.JPanel {
     private Libro libroActual;
     
     private VerParticipantes ventanaParticipantes;
+    
+    private JFileChooser fileChooser;
     
     public PanelVisualizar(String usuario, MainWindow princip) {
         initComponents();
@@ -58,6 +68,8 @@ public class PanelVisualizar extends javax.swing.JPanel {
             
             
         }
+        
+        //createFileChooser();
         
         
     }
@@ -98,9 +110,16 @@ public class PanelVisualizar extends javax.swing.JPanel {
                                                                 "/"  +(l.getFechaPublicacion().get(Calendar.MONTH)+1)+
                                                                 "/"  +l.getFechaPublicacion().get(Calendar.YEAR));
         
+        insertarImagen("./"+l.getPortada());
+        
+
+    }
+    
+    private void insertarImagen(String portada)
+    {
         BufferedImage img = null;
         try {
-            img = ImageIO.read(new File("./"+l.getPortada()));
+            img = ImageIO.read(new File(portada));
         } 
         catch (IOException e) 
         {
@@ -111,7 +130,46 @@ public class PanelVisualizar extends javax.swing.JPanel {
         Image.SCALE_SMOOTH);
         //poner la foto
         portadaImagen.setIcon(new ImageIcon(dimg));
-
+    }
+    
+    private void createFileChooser()
+    {
+        //crea un filechooser
+        fileChooser = new JFileChooser();
+        //establece un filtro para los archivos .dat
+        String[] fil = {"jpg", "png", "jpeg"};
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter("Imagenes", fil);
+        fileChooser.setFileFilter(filtro);
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.addChoosableFileFilter(filtro);
+        
+        //lo ocultamos
+        //lo haremos visible cuando lo necesitemos
+        //fileChooser.setVisible(false);
+    }
+    
+    private void copiarImagen(File fiche)
+    {
+        String dest = "./imagenes/"+libroActual.getIsbn()+".jpg";
+        
+        Path destino = Paths.get(dest);
+        
+        String origen = fiche.getPath();
+        
+        Path orig = Paths.get(origen);
+        
+        try
+        {
+            Files.copy(orig, destino, REPLACE_EXISTING);   
+            insertarImagen("./"+libroActual.getPortada());
+            
+        }
+        catch(IOException ex)
+        {
+            
+        }
+        
+        
     }
 
     /**
@@ -178,7 +236,12 @@ public class PanelVisualizar extends javax.swing.JPanel {
         jButton3.setText("jButton3");
         panelOtrasOpciones.add(jButton3);
 
-        jButton1.setText("jButton1");
+        jButton1.setText("Validar NIF");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
         panelOtrasOpciones.add(jButton1);
 
         panelDatos.add(panelOtrasOpciones, java.awt.BorderLayout.SOUTH);
@@ -276,6 +339,11 @@ public class PanelVisualizar extends javax.swing.JPanel {
         panelImagen.add(portadaImagen);
 
         changeImageButton.setText("Cambiar imagen");
+        changeImageButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                changeImageButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout changeImagePanelLayout = new javax.swing.GroupLayout(changeImagePanel);
         changeImagePanel.setLayout(changeImagePanelLayout);
@@ -317,6 +385,45 @@ public class PanelVisualizar extends javax.swing.JPanel {
     private void verParticipantesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verParticipantesButtonActionPerformed
         ventanaParticipantes = new VerParticipantes(ventanaPrincipal, true, libroActual);
     }//GEN-LAST:event_verParticipantesButtonActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        Validador val = new Validador();
+        
+        int result = val.checkNif(libroActual.getNifPrincAutor());
+        
+        if(result > 0)
+        {
+            JOptionPane.showMessageDialog(null, 
+                                "DNI correcto", "Validacion DNI", 
+                                JOptionPane.INFORMATION_MESSAGE);
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null, 
+                                "DNI incorrecto", "Validacion DNI", 
+                                JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void changeImageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeImageButtonActionPerformed
+        
+        createFileChooser();
+        
+        //selecciona el dialos para guardar
+        int seleccion = fileChooser.showSaveDialog(this);
+        
+        //si acepta
+        if(seleccion == JFileChooser.APPROVE_OPTION)
+        {
+            File fichero = fileChooser.getSelectedFile();
+            
+            if(fichero != null)
+            {
+                copiarImagen(fichero);
+            }
+
+        }
+    }//GEN-LAST:event_changeImageButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
