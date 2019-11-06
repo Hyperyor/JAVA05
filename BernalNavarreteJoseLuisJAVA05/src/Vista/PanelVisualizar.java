@@ -17,11 +17,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  *
@@ -41,6 +43,11 @@ public class PanelVisualizar extends javax.swing.JPanel {
     
     private JFileChooser fileChooser;
     
+    private File imagenTemporal;
+    
+    private boolean imageChanged;
+    private boolean fechaActualizada;
+    
     public PanelVisualizar(String usuario, MainWindow princip) {
         initComponents();
         ventanaPrincipal = princip;
@@ -49,7 +56,7 @@ public class PanelVisualizar extends javax.swing.JPanel {
         libroActual = consulLibros.getFirstBook();
         
         //si hay al menos un libro
-        if(libroActual != null)
+        if(libroActual.getIsbn() != null)
         {
             panelMensajeVacio.setVisible(false);
             rellenarDatos(libroActual);
@@ -148,20 +155,25 @@ public class PanelVisualizar extends javax.swing.JPanel {
         //fileChooser.setVisible(false);
     }
     
-    private void copiarImagen(File fiche)
+    private void copiarImagenTemporal()
     {
-        String dest = "./imagenes/"+libroActual.getIsbn()+".jpg";
+        String ext = FilenameUtils.getExtension(imagenTemporal.getPath());
+        //System.out.println("\nExtension: " + ext);
+        String dest = "./imagenes/temp."+ ext;
         
         Path destino = Paths.get(dest);
         
-        String origen = fiche.getPath();
+        String origen = imagenTemporal.getPath();
         
         Path orig = Paths.get(origen);
+        
+        //libroActual.setPortada("imagenes/"+libroActual.getIsbn()+ "."+ ext);
         
         try
         {
             Files.copy(orig, destino, REPLACE_EXISTING);   
-            insertarImagen("./"+libroActual.getPortada());
+            insertarImagen("./imagenes/temp."+ ext);
+            imageChanged = true;
             
         }
         catch(IOException ex)
@@ -170,6 +182,42 @@ public class PanelVisualizar extends javax.swing.JPanel {
         }
         
         
+    }
+    
+    private void confirmarCambioImagen()
+    {
+        String ext = FilenameUtils.getExtension(imagenTemporal.getPath());
+        //System.out.println("\nExtension: " + ext);
+        String dest = "./imagenes/" + libroActual.getIsbn() +"."+ ext;
+        
+        Path destino = Paths.get(dest);
+        
+        String origen = imagenTemporal.getPath();
+        
+        Path orig = Paths.get(origen);
+        
+        libroActual.setPortada("imagenes/"+libroActual.getIsbn()+ "."+ ext);
+        
+        try
+        {
+            Files.copy(orig, destino, REPLACE_EXISTING);   
+            insertarImagen("./imagenes/" + libroActual.getIsbn() +"."+ ext);
+            
+        }
+        catch(IOException ex)
+        {
+            
+        }
+    }
+    
+    private GregorianCalendar obtenerNuevaFecha() 
+    {
+        return new GregorianCalendar
+        (  jDatePickerFechaPubli.getModel().getYear(), 
+          (jDatePickerFechaPubli.getModel().getMonth()),//no necesito quitarle 1 
+           jDatePickerFechaPubli.getModel().getDay() 
+        );
+      
     }
 
     /**
@@ -186,7 +234,7 @@ public class PanelVisualizar extends javax.swing.JPanel {
         panelDatos = new javax.swing.JPanel();
         panelOtrasOpciones = new javax.swing.JPanel();
         verParticipantesButton = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        changeConfirmation = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         panelRelleno = new javax.swing.JPanel();
         dataPanel = new javax.swing.JPanel();
@@ -233,8 +281,13 @@ public class PanelVisualizar extends javax.swing.JPanel {
         });
         panelOtrasOpciones.add(verParticipantesButton);
 
-        jButton3.setText("jButton3");
-        panelOtrasOpciones.add(jButton3);
+        changeConfirmation.setText("Confirmar cambios");
+        changeConfirmation.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                changeConfirmationActionPerformed(evt);
+            }
+        });
+        panelOtrasOpciones.add(changeConfirmation);
 
         jButton1.setText("Validar NIF");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -299,6 +352,12 @@ public class PanelVisualizar extends javax.swing.JPanel {
         jLabelFechaPubli.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabelFechaPubli.setText("Fecha publicación");
         dataPanel.add(jLabelFechaPubli);
+
+        jDatePickerFechaPubli.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jDatePickerFechaPubliActionPerformed(evt);
+            }
+        });
         dataPanel.add(jDatePickerFechaPubli);
 
         panelDatos.add(dataPanel, java.awt.BorderLayout.CENTER);
@@ -415,23 +474,63 @@ public class PanelVisualizar extends javax.swing.JPanel {
         //si acepta
         if(seleccion == JFileChooser.APPROVE_OPTION)
         {
-            File fichero = fileChooser.getSelectedFile();
+            imagenTemporal = fileChooser.getSelectedFile();
             
-            if(fichero != null)
+            if(imagenTemporal != null)
             {
-                copiarImagen(fichero);
+                copiarImagenTemporal();
             }
 
         }
     }//GEN-LAST:event_changeImageButtonActionPerformed
 
+    private void changeConfirmationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeConfirmationActionPerformed
+        
+        if(imageChanged || fechaActualizada)
+        {
+            if(imageChanged)
+            {
+                confirmarCambioImagen();
+            }
+
+            int n = consulLibros.updateBook(libroActual);
+            
+            if(n == 1)
+            {
+                JOptionPane.showMessageDialog(null, 
+                                "Actualizacion correcta", "Actualizacion de datos", 
+                                JOptionPane.INFORMATION_MESSAGE);
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, 
+                                "Actualizacion incorrecta", "Actualizacion de datos", 
+                                JOptionPane.ERROR_MESSAGE);
+            }
+            
+            imageChanged = false;
+            fechaActualizada = false;
+        }
+        
+        
+        //hacer los updates en la base de datos
+    }//GEN-LAST:event_changeConfirmationActionPerformed
+
+    private void jDatePickerFechaPubliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jDatePickerFechaPubliActionPerformed
+        GregorianCalendar fechaActualizada=obtenerNuevaFecha();
+          
+        libroActual.setFechaPublicacion(fechaActualizada);
+
+        this.fechaActualizada=true;
+    }//GEN-LAST:event_jDatePickerFechaPubliActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton changeConfirmation;
     private javax.swing.JButton changeImageButton;
     private javax.swing.JPanel changeImagePanel;
     private javax.swing.JPanel dataPanel;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButtonAnterior;
     private javax.swing.JButton jButtonSiguiente;
     private org.jdatepicker.JDatePicker jDatePickerFechaPubli;

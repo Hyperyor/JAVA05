@@ -57,6 +57,7 @@ public class GestionLibros {
             
             if(rSet.first())
             {
+                
                 l = getData();
             }
             
@@ -98,6 +99,7 @@ public class GestionLibros {
         
         try
         {
+            
             l.setIsbn(rSet.getString("ISBN"));
             l.setTitulo(rSet.getString("titulo"));
             l.setPortada(rSet.getString("portada"));
@@ -201,6 +203,28 @@ public class GestionLibros {
         }
         
         return false;
+    }
+    
+    public int updateBook(Libro l)
+    {
+        try
+        {
+            java.util.Date utilDate = l.getFechaPublicacion().getTime();
+
+            java.sql.Date d = new java.sql.Date(utilDate.getTime());
+            rSet.updateDate("fecha_publicacion", d);
+            
+            rSet.updateString("portada", l.getPortada());
+            
+            rSet.updateRow();
+            
+        }
+        catch(SQLException ex)
+        {
+            return 0;
+        }
+        
+        return 1;
     }
     
     public boolean queryState()

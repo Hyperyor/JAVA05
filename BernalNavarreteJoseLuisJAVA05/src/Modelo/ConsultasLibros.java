@@ -27,6 +27,13 @@ public class ConsultasLibros {
         usuarioActual = user;
     }
     
+    public int updateBook(Libro l)
+    {
+        int n = gestionLibs.updateBook(l);
+        
+        return n;
+    }
+    
     public Libro getFirstBook()
     {
 
