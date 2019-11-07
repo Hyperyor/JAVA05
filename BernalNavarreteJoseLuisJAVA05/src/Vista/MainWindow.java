@@ -21,6 +21,8 @@ public class MainWindow extends javax.swing.JFrame {
     private String actualUser;
     private PanelVisualizar pVisualizar;
     private Acerca ventanaAcerca;
+    
+    private PanelInsertar creacionLibro;
    
     public MainWindow() {
         initComponents();
@@ -83,6 +85,7 @@ public class MainWindow extends javax.swing.JFrame {
         acercaDeButton = new javax.swing.JMenu();
         visualizarDatosButton = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
+        nuevoLibroButton = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("JAVA05");
@@ -125,6 +128,14 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
         acercaDeButton.add(jMenuItem1);
+
+        nuevoLibroButton.setText("Nuevo libro");
+        nuevoLibroButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nuevoLibroButtonActionPerformed(evt);
+            }
+        });
+        acercaDeButton.add(nuevoLibroButton);
 
         jMenuBar1.add(acercaDeButton);
 
@@ -173,6 +184,11 @@ public class MainWindow extends javax.swing.JFrame {
         ventanaAcerca=new Acerca(this, true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
+    private void nuevoLibroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nuevoLibroButtonActionPerformed
+        creacionLibro = new PanelInsertar(this);
+        cambiarContenedor();
+    }//GEN-LAST:event_nuevoLibroButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -215,6 +231,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem disconnectionButton;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem nuevoLibroButton;
     private javax.swing.JMenuItem visualizarDatosButton;
     // End of variables declaration//GEN-END:variables
 }

@@ -16,6 +16,8 @@ public class ConsultasParticipantes {
     
     private String obtenerParticipantesLibro = "Select * from escribe where ISBN = ?;";
     
+    private String insertarParticipante = "insert into escribe (isbn, codigo_autor, numero, beneficio_autor) values (?, ?, ?, ?);";
+    
     private GestionParticipantes gestPartic;
     
     private ArrayList<Participante> listadoParticipantes;
@@ -32,6 +34,17 @@ public class ConsultasParticipantes {
         listadoParticipantes = gestPartic.getListadoParticipantes(l.getIsbn());
         
         return listadoParticipantes;
+    }
+    
+    public int insertarParticipante(Participante p)
+    {
+        gestPartic = new GestionParticipantes();
+        gestPartic.prepararStamenet(insertarParticipante);
+        
+        int n = gestPartic.insertarElemento(p);
+        
+        return n;
+        
     }
     
 }

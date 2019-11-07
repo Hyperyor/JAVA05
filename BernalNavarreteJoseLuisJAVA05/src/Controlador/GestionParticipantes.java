@@ -28,6 +28,33 @@ public class GestionParticipantes {
         statement = GestionBD.getPreparedStatement(query);
     }
     
+    public int insertarElemento(Participante p)
+    {
+        try
+        {
+            statement.setString(1, p.getIsbn());
+            
+            statement.setInt(2, p.getCodigoAutor());
+            
+            statement.setInt(3, p.getNumero());
+            
+            statement.setFloat(4, p.getBeneficio());
+            
+            //System.out.println("\nTodo ok");
+            
+            
+            statement.execute();
+ 
+            return 1;
+            
+        }
+        catch(SQLException ex)
+        {
+            System.out.println("\n" + ex.getMessage());
+            return 0;
+        }
+    }
+    
     public ArrayList<Participante> getListadoParticipantes(String isbn)
     {
         ArrayList<Participante> lista = new ArrayList<Participante>();

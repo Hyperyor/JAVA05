@@ -5,6 +5,8 @@
  */
 package Vista;
 
+import Modelo.Autor;
+import Modelo.ConsultasAutor;
 import Modelo.ConsultasParticipantes;
 import Modelo.Libro;
 import Modelo.Participante;
@@ -33,6 +35,12 @@ public class VerParticipantes extends javax.swing.JDialog {
     
     private DefaultTableModel model;
     
+    private SeleccionarAutor seleccionAutor;
+    
+    private int selectedIndex;
+    
+    private ArrayList<Autor> listaAutoresDisponibles;
+    
     public VerParticipantes(java.awt.Frame parent, boolean modal, Libro libroActual) {
         super(parent, modal);
         initComponents();
@@ -47,7 +55,17 @@ public class VerParticipantes extends javax.swing.JDialog {
         
         model = (DefaultTableModel) jTableDatosParticipantes.getModel();
         
-        cargarDatos();
+        if(listadoParticipantes.isEmpty())
+        {
+            JOptionPane.showMessageDialog(null, 
+                                "No hay participantes", "Error", 
+                                JOptionPane.WARNING_MESSAGE);
+        }
+        else
+        {
+            cargarDatos();
+        }
+        
         
         setResizable(false);
         Dimension jDialogTamaño=this.getPreferredSize();
@@ -56,6 +74,11 @@ public class VerParticipantes extends javax.swing.JDialog {
         this.setLocation((jFrameTamaño.width-jDialogTamaño.width)/2+corrdenadasJDialog.x, (jFrameTamaño.height-jDialogTamaño.height)/2+corrdenadasJDialog.y);
         this.setVisible(true);
     }
+    
+//    public ArrayList<Participante> getListadoParticipantes()
+//    {
+//        return listadoParticipantes;
+//    }
     
     private void cargarDatos()
     {
@@ -95,6 +118,69 @@ public class VerParticipantes extends javax.swing.JDialog {
     {
         model.setRowCount(0);
     }
+    
+    private ArrayList<Autor> getListaAutoresDisponibles()
+    {
+        ConsultasAutor consAut = new ConsultasAutor();
+        
+        ArrayList<Autor> listadoAutoresCompleto = consAut.getListadoAutores();
+        
+        ArrayList<Autor> listaAutoresDisponibles = new ArrayList<Autor>();
+        
+        boolean contiene = false;
+        
+        for (int i = 0; i < listadoAutoresCompleto.size(); i++) 
+        {
+            
+            for (int j = 0; j < listadoParticipantes.size(); j++) 
+            {
+                if(listadoParticipantes.get(j).getCodigoAutor() == listadoAutoresCompleto.get(i).getCodigo())
+                {
+                    contiene = true; 
+                    break;
+                }
+                
+            }
+            
+            if(!contiene)
+            {
+                listaAutoresDisponibles.add(listadoAutoresCompleto.get(i));
+            }
+            
+            contiene = false;
+        }
+        
+        return listaAutoresDisponibles;
+    }
+    
+    public void insertarElemento(int indice)
+    {
+        //cargamos el participante con datos
+        Participante p = new Participante();
+        
+        p.setIsbn(libroActual.getIsbn());
+        
+        p.setCodigoAutor(listaAutoresDisponibles.get(indice).getCodigo());
+        
+        p.setNumero(listadoParticipantes.size() + 1);
+        
+        float numero = listaAutoresDisponibles.get(indice).getPorcentajeBeneficio() * libroActual.getPrecio() / 100;
+        
+        float num = (float) (Math.round(numero * Math.pow(10, 2)) / Math.pow(10, 2));
+        
+        p.setBeneficio(num);
+        
+        //aniadimos el participante a la lista
+        listadoParticipantes.add(p);
+        //reseteamos el jtable
+        resetTable();
+        cargarDatos();
+        
+        //insertamos la nueva fila en la BD
+        int n = consulPartic.insertarParticipante(p);
+        
+        //System.out.println("\nResultado de la insercion: " + n);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -113,12 +199,13 @@ public class VerParticipantes extends javax.swing.JDialog {
         buttonsPane = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        insertarButton = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         volverButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Participantes");
+        setPreferredSize(new java.awt.Dimension(500, 478));
 
         titleLabel.setText("Listado de participantes");
         labelPane.add(titleLabel);
@@ -185,8 +272,13 @@ public class VerParticipantes extends javax.swing.JDialog {
 
         buttonsPane.add(jPanel2);
 
-        jButton1.setText("jButton1");
-        buttonsPane.add(jButton1);
+        insertarButton.setText("Insertar nuevo elemento");
+        insertarButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                insertarButtonActionPerformed(evt);
+            }
+        });
+        buttonsPane.add(insertarButton);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -217,6 +309,22 @@ public class VerParticipantes extends javax.swing.JDialog {
     private void volverButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_volverButtonActionPerformed
         this.dispose();
     }//GEN-LAST:event_volverButtonActionPerformed
+
+    private void insertarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertarButtonActionPerformed
+        listaAutoresDisponibles = getListaAutoresDisponibles();
+        
+        if(listaAutoresDisponibles.isEmpty())
+        {
+            JOptionPane.showMessageDialog(null, 
+                                "No hay autores disponibles", "Error", 
+                                JOptionPane.WARNING_MESSAGE);
+        }
+        else
+        {
+            seleccionAutor = new SeleccionarAutor(venP, true, listaAutoresDisponibles, this);
+        }
+        
+    }//GEN-LAST:event_insertarButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -264,7 +372,7 @@ public class VerParticipantes extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel buttonsPane;
     private javax.swing.JPanel dataPane;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton insertarButton;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
