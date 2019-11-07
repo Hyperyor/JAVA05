@@ -41,13 +41,12 @@ public class PanelInsertar extends javax.swing.JPanel {
     
     private File imagenTemporal;
     
-    private boolean imageChanged;
-    private boolean fechaActualizada;
+    private PanelVisualizar pVisualizar;
     
     public PanelInsertar(String usuario, MainWindow princip, PanelVisualizar pVisual) {
         initComponents();
         ventanaPrincipal = princip;
-
+        pVisualizar = pVisual;
     }
     
     private void insertarImagen(String portada)
@@ -78,9 +77,6 @@ public class PanelInsertar extends javax.swing.JPanel {
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.addChoosableFileFilter(filtro);
         
-        //lo ocultamos
-        //lo haremos visible cuando lo necesitemos
-        //fileChooser.setVisible(false);
     }
     
     private void copiarImagenTemporal()
@@ -101,7 +97,6 @@ public class PanelInsertar extends javax.swing.JPanel {
         {
             Files.copy(orig, destino, REPLACE_EXISTING);   
             insertarImagen("./imagenes/temp."+ ext);
-            imageChanged = true;
             
         }
         catch(IOException ex)
@@ -313,6 +308,14 @@ public class PanelInsertar extends javax.swing.JPanel {
 
     private void jButtonAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAceptarActionPerformed
         
+        //tomar datos de los textfields
+        
+        //confirmar correccion
+        
+        //insertar libro en BD
+        //pVisualizar.getConsultaLibros();
+        
+        
         ventanaPrincipal.cambiarAVisualizar();
     }//GEN-LAST:event_jButtonAceptarActionPerformed
 
@@ -347,8 +350,6 @@ public class PanelInsertar extends javax.swing.JPanel {
         //comprobar correccion de la fecha (que no sea posterior a la fecha actual)
         
         //nuevoLibro.setFechaPublicacion(fechaActualizada);
-
-        this.fechaActualizada=true;
     }//GEN-LAST:event_jDatePickerFechaPubliActionPerformed
 
 

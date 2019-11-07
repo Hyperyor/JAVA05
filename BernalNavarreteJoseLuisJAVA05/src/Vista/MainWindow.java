@@ -185,8 +185,8 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void nuevoLibroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nuevoLibroButtonActionPerformed
-        creacionLibro = new PanelInsertar(this);
-        cambiarContenedor();
+        creacionLibro = new PanelInsertar(actualUser, this, pVisualizar);
+        cambiarContenedor(creacionLibro);
     }//GEN-LAST:event_nuevoLibroButtonActionPerformed
 
     /**

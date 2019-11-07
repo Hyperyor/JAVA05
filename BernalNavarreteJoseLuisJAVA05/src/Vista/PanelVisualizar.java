@@ -81,6 +81,11 @@ public class PanelVisualizar extends javax.swing.JPanel {
         
     }
     
+    public ConsultasLibros getConsultaLibros()
+    {
+        return consulLibros;
+    }
+    
     private void controlDeBotones()
     {
         if(consulLibros.isFirstBook())
