@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -64,8 +65,16 @@ public class PanelVisualizar extends javax.swing.JPanel {
         }
         else
         {
-            panelMensajeVacio.setVisible(true);
+            //panelMensajeVacio.setVisible(true);
+            
+            JOptionPane.showMessageDialog(null, 
+                                "No existen libros para este usuario", "Error", 
+                                JOptionPane.ERROR_MESSAGE);
+            
+            
+            
             panelDatos.setVisible(false);
+            panelImagen.setVisible(false);
             
             jButtonAnterior.setEnabled(false);
             jButtonSiguiente.setEnabled(false);
@@ -187,6 +196,26 @@ public class PanelVisualizar extends javax.swing.JPanel {
         }
         
         
+    }
+    
+    private boolean fechaPosterior()
+    {
+        GregorianCalendar fechaInsertada = obtenerNuevaFecha();
+        
+        Date d = fechaInsertada.getTime();
+        
+        GregorianCalendar fechaActual = new GregorianCalendar();
+        
+        Date d2 = fechaActual.getTime();
+        
+        if(d.before(d2) || d.equals(d2))
+        {
+            //System.out.println("\nLa fecha es anterior a la actual");
+            return false;
+        }
+        
+        //System.out.println("\nLa fecha es posterior a la actual");
+        return true;
     }
     
     private void confirmarCambioImagen()
@@ -497,7 +526,12 @@ public class PanelVisualizar extends javax.swing.JPanel {
             {
                 confirmarCambioImagen();
             }
-
+            
+            if(fechaActualizada)
+            {
+                libroActual.setFechaPublicacion(obtenerNuevaFecha());
+            }
+            
             int n = consulLibros.updateBook(libroActual);
             
             if(n == 1)
@@ -522,14 +556,26 @@ public class PanelVisualizar extends javax.swing.JPanel {
     }//GEN-LAST:event_changeConfirmationActionPerformed
 
     private void jDatePickerFechaPubliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jDatePickerFechaPubliActionPerformed
-        GregorianCalendar fechaActualizada=obtenerNuevaFecha();
+        //GregorianCalendar fechaActualizada=obtenerNuevaFecha();
         
         
         //comprobar correccion de la fecha (que no sea posterior a la fecha actual)
         
-        libroActual.setFechaPublicacion(fechaActualizada);
-
-        this.fechaActualizada=true;
+        if(!fechaPosterior())
+        {
+ 
+            this.fechaActualizada=true;
+        }
+        else
+        {
+            //mostrar error
+            this.fechaActualizada=false;
+            jDatePickerFechaPubli.getFormattedTextField().setText(""+libroActual.getFechaPublicacion().get(Calendar.DAY_OF_MONTH)+
+                                                                "/"  +(libroActual.getFechaPublicacion().get(Calendar.MONTH)+1)+
+                                                                "/"  +libroActual.getFechaPublicacion().get(Calendar.YEAR));
+        }
+        
+        
     }//GEN-LAST:event_jDatePickerFechaPubliActionPerformed
 
 

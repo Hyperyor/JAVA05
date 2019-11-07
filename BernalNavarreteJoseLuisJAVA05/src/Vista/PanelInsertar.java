@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -43,10 +44,20 @@ public class PanelInsertar extends javax.swing.JPanel {
     
     private PanelVisualizar pVisualizar;
     
+    private boolean fechaSeleccionada;
+    
+    private Libro nuevoLibro;
+    
+    private String user;
+    
     public PanelInsertar(String usuario, MainWindow princip, PanelVisualizar pVisual) {
         initComponents();
         ventanaPrincipal = princip;
         pVisualizar = pVisual;
+        nuevoLibro = new Libro();
+        user = usuario;
+        
+        jTextFieldPropietario.setText(user);
     }
     
     private void insertarImagen(String portada)
@@ -82,7 +93,7 @@ public class PanelInsertar extends javax.swing.JPanel {
     private void copiarImagenTemporal()
     {
         String ext = FilenameUtils.getExtension(imagenTemporal.getPath());
-        //System.out.println("\nExtension: " + ext);
+        
         String dest = "./imagenes/temp."+ ext;
         
         Path destino = Paths.get(dest);
@@ -90,8 +101,6 @@ public class PanelInsertar extends javax.swing.JPanel {
         String origen = imagenTemporal.getPath();
         
         Path orig = Paths.get(origen);
-        
-        //libroActual.setPortada("imagenes/"+libroActual.getIsbn()+ "."+ ext);
         
         try
         {
@@ -107,31 +116,31 @@ public class PanelInsertar extends javax.swing.JPanel {
         
     }
     
-//    private void confirmarCambioImagen()
-//    {
-//        String ext = FilenameUtils.getExtension(imagenTemporal.getPath());
-//        //System.out.println("\nExtension: " + ext);
-//        String dest = "./imagenes/" + nuevoLibro.getIsbn() +"."+ ext;
-//        
-//        Path destino = Paths.get(dest);
-//        
-//        String origen = imagenTemporal.getPath();
-//        
-//        Path orig = Paths.get(origen);
-//        
-//        nuevoLibro.setPortada("imagenes/"+nuevoLibro.getIsbn()+ "."+ ext);
-//        
-//        try
-//        {
-//            Files.copy(orig, destino, REPLACE_EXISTING);   
-//            insertarImagen("./imagenes/" + nuevoLibro.getIsbn() +"."+ ext);
-//            
-//        }
-//        catch(IOException ex)
-//        {
-//            
-//        }
-//    }
+    private void confirmarCambioImagen()
+    {
+        String ext = FilenameUtils.getExtension(imagenTemporal.getPath());
+        //System.out.println("\nExtension: " + ext);
+        String dest = "./imagenes/" + nuevoLibro.getIsbn() +"."+ ext;
+        
+        Path destino = Paths.get(dest);
+        
+        String origen = imagenTemporal.getPath();
+        
+        Path orig = Paths.get(origen);
+        
+        nuevoLibro.setPortada("imagenes/"+nuevoLibro.getIsbn()+ "."+ ext);
+        
+        try
+        {
+            Files.copy(orig, destino, REPLACE_EXISTING);   
+            insertarImagen("./imagenes/" + nuevoLibro.getIsbn() +"."+ ext);
+            
+        }
+        catch(IOException ex)
+        {
+            
+        }
+    }
     
     private GregorianCalendar obtenerNuevaFecha() 
     {
@@ -141,6 +150,172 @@ public class PanelInsertar extends javax.swing.JPanel {
            jDatePickerFechaPubli.getModel().getDay() 
         );
       
+    }
+    
+    private boolean datosCorrectos()
+    {
+        if(imagenTemporal != null)
+        {
+            
+            if(fechaSeleccionada == true && fechaCorrecta())
+            {
+               
+                if(correccionIsbn())
+                {
+                    if(correccionPrecio())
+                    {
+                        if(correccionTitulo())
+                        {
+                            if(correccionDni())
+                            {
+                                return true;
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    private boolean correccionIsbn()
+    {
+        if(jTextFieldISBN.getText() != "" && jTextFieldISBN.getText().length() <= 13)
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean correccionDni()
+    {
+        if(jTextFieldNifAutor.getText() != "" && jTextFieldNifAutor.getText().length() <= 9)
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean correccionTitulo()
+    {
+        if(jTextFieldTitulo.getText() != "" && jTextFieldTitulo.getText().length() <= 100)
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean correccionPrecio()
+    {
+        if(jTextFieldPrecio.getText() != "" && convertirFloat(jTextFieldPrecio.getText()) > 0)
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    //falta comprobar que la fecha no sea posterior a la actual
+    private boolean fechaCorrecta()
+    {
+        if(correctDate(jDatePickerFechaPubli.getModel().getDay(), 
+          jDatePickerFechaPubli.getModel().getMonth(), 
+           jDatePickerFechaPubli.getModel().getYear()) && !fechaPosterior() )
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean fechaPosterior()
+    {
+        GregorianCalendar fechaInsertada = obtenerNuevaFecha();
+        
+        Date d = fechaInsertada.getTime();
+        
+        GregorianCalendar fechaActual = new GregorianCalendar();
+        
+        Date d2 = fechaActual.getTime();
+        
+        if(d.before(d2) || d.equals(d2))
+        {
+            //System.out.println("\nLa fecha es anterior a la actual");
+            return false;
+        }
+        
+        //System.out.println("\nLa fecha es posterior a la actual");
+        return true;
+    }
+    
+    private boolean correctDate(int day, int month, int year)
+    {
+        if(year > 0)
+        {
+            if(month >= 1 && month <= 12)
+            {
+                if(day >= 1 && day <= checkMonthsTotalDays(month, year))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private int checkMonthsTotalDays(int month, int year)
+    {
+        switch(month)
+        {
+        case 1:
+        case 3:
+        case 5:
+        case 7:
+        case 8:
+        case 10:
+        case 12: return 31;
+        case 4:
+        case 6:
+        case 9:
+        case 11: return 30;
+        case 2: 
+               if(comprobarBisiesto(year))
+               {
+                   return 29;
+               }
+               else
+               {
+                   return 28;
+               }
+     
+        }   
+        
+        return 1;
+    }
+    
+    private boolean comprobarBisiesto(int year)
+    {
+        if((year % 4 == 0) && !((year % 100 == 0) && (year % 400 != 0)))
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    private float convertirFloat(String texto)
+    {
+        float f = 0;
+         
+        try
+        {
+          f =  Float.parseFloat(texto);
+        }
+        catch(NumberFormatException e)
+        {
+          //return Float.NaN; // No es un número (valor float)
+        }
+         
+        return f;
     }
 
     /**
@@ -228,6 +403,8 @@ public class PanelInsertar extends javax.swing.JPanel {
         jLabelPropietario.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabelPropietario.setText("Propietario");
         dataPanel.add(jLabelPropietario);
+
+        jTextFieldPropietario.setEditable(false);
         dataPanel.add(jTextFieldPropietario);
 
         jLabelFechaPubli.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -306,16 +483,45 @@ public class PanelInsertar extends javax.swing.JPanel {
         add(panelImagen, java.awt.BorderLayout.LINE_END);
     }// </editor-fold>//GEN-END:initComponents
 
+    
+    
     private void jButtonAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAceptarActionPerformed
         
-        //tomar datos de los textfields
-        
-        //confirmar correccion
-        
-        //insertar libro en BD
-        //pVisualizar.getConsultaLibros();
-        
-        
+        if(datosCorrectos())
+        {
+            nuevoLibro.setIsbn(jTextFieldISBN.getText());
+            nuevoLibro.setNifPrincAutor(jTextFieldNifAutor.getText());
+            
+            nuevoLibro.setPropietario(user);
+            
+            nuevoLibro.setTitulo(jTextFieldTitulo.getText());
+            
+            nuevoLibro.setFechaPublicacion(obtenerNuevaFecha());
+            
+            nuevoLibro.setPrecio(convertirFloat(jTextFieldPrecio.getText()));
+            
+            confirmarCambioImagen();
+            
+            //insertar en BD
+            int n = pVisualizar.getConsultaLibros().insertBook(nuevoLibro);
+            
+            if(n > 0)
+            {
+                System.out.println("\nTodo ok en la insercion de libro");
+            }
+            else
+            {
+                System.out.println("\nAlgo ha fallado en la insercion");
+            }
+            
+            
+        }
+        else
+        {
+            //error
+            System.out.println("\nError en los datos");
+        }
+            
         ventanaPrincipal.cambiarAVisualizar();
     }//GEN-LAST:event_jButtonAceptarActionPerformed
 
@@ -344,9 +550,9 @@ public class PanelInsertar extends javax.swing.JPanel {
     }//GEN-LAST:event_selectImageButtonActionPerformed
 
     private void jDatePickerFechaPubliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jDatePickerFechaPubliActionPerformed
-        GregorianCalendar fechaActualizada=obtenerNuevaFecha();
+        //GregorianCalendar fechaActualizada=obtenerNuevaFecha();
         
-        
+        fechaSeleccionada = true;
         //comprobar correccion de la fecha (que no sea posterior a la fecha actual)
         
         //nuevoLibro.setFechaPublicacion(fechaActualizada);

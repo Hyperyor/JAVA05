@@ -227,6 +227,43 @@ public class GestionLibros {
         return 1;
     }
     
+    public int insertarLibro(Libro l)
+    {
+
+        try
+        {
+  
+            rSet.moveToInsertRow();
+            
+            rSet.updateString("ISBN", l.getIsbn());
+            
+            rSet.updateFloat("precio", l.getPrecio());
+            
+            rSet.updateString("titulo", l.getTitulo());
+            
+            rSet.updateString("nif_autor_principal", l.getNifPrincAutor());
+            
+            rSet.updateString("portada", l.getPortada());
+            
+            rSet.updateString("propietario", l.getPropietario());
+            
+            java.util.Date utilDate = l.getFechaPublicacion().getTime();
+            java.sql.Date d = new java.sql.Date(utilDate.getTime());
+            
+            rSet.updateDate("fecha_publicacion", d);
+            
+            rSet.insertRow();
+            
+            return 1;
+
+        }
+        catch(SQLException ex)
+        {
+            //System.out.println("\nError 111");
+            return 0;
+        }
+    }
+    
     public boolean queryState()
     {
         return queryExecuted;

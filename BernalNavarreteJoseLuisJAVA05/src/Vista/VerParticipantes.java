@@ -169,15 +169,22 @@ public class VerParticipantes extends javax.swing.JDialog {
         float num = (float) (Math.round(numero * Math.pow(10, 2)) / Math.pow(10, 2));
         
         p.setBeneficio(num);
-        
-        //aniadimos el participante a la lista
-        listadoParticipantes.add(p);
-        //reseteamos el jtable
-        resetTable();
-        cargarDatos();
-        
+
         //insertamos la nueva fila en la BD
         int n = consulPartic.insertarParticipante(p);
+        
+        if(n != 0)
+        {
+            //aniadimos el participante a la lista
+            listadoParticipantes.add(p);
+            //reseteamos el jtable
+            resetTable();
+            cargarDatos();
+        }
+        else
+        {
+            //error al insertar nuevo elemento
+        }
         
         //System.out.println("\nResultado de la insercion: " + n);
     }
@@ -206,6 +213,7 @@ public class VerParticipantes extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Participantes");
         setPreferredSize(new java.awt.Dimension(500, 478));
+        getContentPane().setLayout(new java.awt.BorderLayout());
 
         titleLabel.setText("Listado de participantes");
         labelPane.add(titleLabel);

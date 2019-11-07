@@ -69,4 +69,9 @@ public class ConsultasLibros {
         return libroActual;
     }
     
+    public int insertBook(Libro l)
+    {
+        return gestionLibs.insertarLibro(l);
+    }
+    
 }
