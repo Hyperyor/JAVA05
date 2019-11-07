@@ -269,7 +269,7 @@ public class PanelVisualizar extends javax.swing.JPanel {
         panelOtrasOpciones = new javax.swing.JPanel();
         verParticipantesButton = new javax.swing.JButton();
         changeConfirmation = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        validarNifButton = new javax.swing.JButton();
         panelRelleno = new javax.swing.JPanel();
         dataPanel = new javax.swing.JPanel();
         jLabelISBN = new javax.swing.JLabel();
@@ -323,13 +323,13 @@ public class PanelVisualizar extends javax.swing.JPanel {
         });
         panelOtrasOpciones.add(changeConfirmation);
 
-        jButton1.setText("Validar NIF");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        validarNifButton.setText("Validar NIF");
+        validarNifButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                validarNifButtonActionPerformed(evt);
             }
         });
-        panelOtrasOpciones.add(jButton1);
+        panelOtrasOpciones.add(validarNifButton);
 
         panelDatos.add(panelOtrasOpciones, java.awt.BorderLayout.SOUTH);
 
@@ -479,7 +479,7 @@ public class PanelVisualizar extends javax.swing.JPanel {
         ventanaParticipantes = new VerParticipantes(ventanaPrincipal, true, libroActual);
     }//GEN-LAST:event_verParticipantesButtonActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void validarNifButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_validarNifButtonActionPerformed
         Validador val = new Validador();
         
         int result = val.checkNif(libroActual.getNifPrincAutor());
@@ -496,7 +496,7 @@ public class PanelVisualizar extends javax.swing.JPanel {
                                 "DNI incorrecto", "Validacion DNI", 
                                 JOptionPane.WARNING_MESSAGE);
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_validarNifButtonActionPerformed
 
     private void changeImageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeImageButtonActionPerformed
         
@@ -584,7 +584,6 @@ public class PanelVisualizar extends javax.swing.JPanel {
     private javax.swing.JButton changeImageButton;
     private javax.swing.JPanel changeImagePanel;
     private javax.swing.JPanel dataPanel;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButtonAnterior;
     private javax.swing.JButton jButtonSiguiente;
     private org.jdatepicker.JDatePicker jDatePickerFechaPubli;
@@ -608,6 +607,7 @@ public class PanelVisualizar extends javax.swing.JPanel {
     private javax.swing.JPanel panelRelleno;
     private javax.swing.JLabel portadaImagen;
     private javax.swing.JLabel tituloLabel;
+    private javax.swing.JButton validarNifButton;
     private javax.swing.JButton verParticipantesButton;
     // End of variables declaration//GEN-END:variables
 }
