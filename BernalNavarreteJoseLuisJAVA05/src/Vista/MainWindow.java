@@ -5,7 +5,9 @@
  */
 package Vista;
 
+import Controlador.Errores;
 import Controlador.GestionBD;
+import Controlador.GestionErrores;
 import Modelo.ConsultasLibros;
 import java.awt.Color;
 import javax.swing.JOptionPane;
@@ -32,6 +34,8 @@ public class MainWindow extends javax.swing.JFrame {
         panelConexion = new PanelConexion(this);
         
         reset();
+        
+        
     }
     
     private void reset()
@@ -44,7 +48,17 @@ public class MainWindow extends javax.swing.JFrame {
     
     private void conexionConLasBasesDeDatos()
     {
-        GestionBD.connectToDataBase();
+        try
+        {
+            GestionBD.connectToDataBase();
+        }
+        catch(Errores er)
+        {
+            JOptionPane.showMessageDialog(null, 
+                                er.showMessage(), "Conexion BD", 
+                                JOptionPane.ERROR_MESSAGE);
+        }
+        
     }
     
     public void conexionRealizada(String usuario)

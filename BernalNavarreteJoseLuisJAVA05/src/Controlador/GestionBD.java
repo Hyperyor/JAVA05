@@ -22,9 +22,10 @@ public class GestionBD {
     private static PreparedStatement statementDeValidacionPost;
     private static PreparedStatement statementDeValidacionMys;
     
-    public static void connectToDataBase()
+    public static void connectToDataBase() throws Errores
     {
         String consulta ="select * from cuenta where usuario = ? and password = ?";
+        
         
         conectarConMySQL();
         conectarConPostgreSQL();
@@ -36,12 +37,14 @@ public class GestionBD {
         }
         catch(SQLException ex)
         {
+            GestionErrores.escribirMensaje(ex.getMessage());
             
+            throw new Errores(GestionErrores.errorBD);
         }
         
     }
     
-    public static PreparedStatement getPreparedStatement(String query)
+    public static PreparedStatement getPreparedStatement(String query) throws Errores
     {
         PreparedStatement stmt = null;
         try
@@ -50,43 +53,64 @@ public class GestionBD {
         }
         catch(SQLException ex)
         {
+            GestionErrores.escribirMensaje(ex.getMessage());
             
+            throw new Errores(GestionErrores.errorDatos);
         }
         
         
         return stmt;
     }
     
-    public static boolean validateConnection(String user, String pass)
+    public static boolean validateConnection(String user, String pass) throws Errores
     {
         ResultSet mys;
         ResultSet pos;
-        try
+        
+        if(connected)
         {
-            statementDeValidacionPost.setString(1, user);
-            statementDeValidacionPost.setString(2, pass);
-            
-            statementDeValidacionMys.setString(1, user);
-            statementDeValidacionMys.setString(2, pass);
-            
-            pos = statementDeValidacionPost.executeQuery();
-            mys = statementDeValidacionMys.executeQuery();
-            
-            if(pos.next() && mys.next())
+            try
             {
-                System.out.println("\nValidacion correcta");
-                return true;
+                statementDeValidacionPost.setString(1, user);
+                statementDeValidacionPost.setString(2, pass);
+
+                statementDeValidacionMys.setString(1, user);
+                statementDeValidacionMys.setString(2, pass);
+
+                pos = statementDeValidacionPost.executeQuery();
+                mys = statementDeValidacionMys.executeQuery();
+
+                if(pos.next() && mys.next())
+                {
+                    System.out.println("\nValidacion correcta");
+                    return true;
+                }
+
+                Errores er = new Errores(GestionErrores.errorValidacion);
+
+                GestionErrores.escribirMensaje(er.showMessage());
+
+                throw er;
+            }
+            catch(SQLException ex)
+            {
+                GestionErrores.escribirMensaje(ex.getMessage());
+
+                throw new Errores(GestionErrores.errorValidacion);
             }
         }
-        catch(SQLException ex)
+        else
         {
-            
+            Errores er = new Errores(GestionErrores.errorBD);
+            GestionErrores.escribirMensaje(er.showMessage());
+            throw er;
         }
+        
             
-        return false;
+        //return false;
     }
     
-    public static boolean conectarConMySQL()
+    public static boolean conectarConMySQL() throws Errores
     {
         String driver = "com.mysql.jdbc.Driver";
         
@@ -109,16 +133,20 @@ public class GestionBD {
             connectedToMySQL = true;
             checkConnectionState();
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-            System.out.println("\nConexion incorrecta con mysql");
             
-            return false;
+            GestionErrores.escribirMensaje(e.getMessage());
+            System.out.println("\nConexion incorrecta con mysql");
+            throw new Errores(GestionErrores.errorBD);
+            
+            
+            
+            //return false;
         }
         
         return true;
     }
     
-    public static boolean conectarConPostgreSQL()
+    public static boolean conectarConPostgreSQL() throws Errores
     {
         String urlDatabase =  "jdbc:postgresql://localhost:5432/biblioteca"; 
         
@@ -133,7 +161,10 @@ public class GestionBD {
         } catch (Exception e) {
             System.out.println("\nConexion incorrecta con postgres");
             //System.out.println("Ocurrio un error : "+e.getMessage());
-            return false;
+            GestionErrores.escribirMensaje(e.getMessage());
+            
+            throw new Errores(GestionErrores.errorBD);
+            //return false;
         }
         
         //connected = true;
@@ -148,7 +179,7 @@ public class GestionBD {
         }
     }
     
-    public static void closeConnectionToDataBase() 
+    public static void closeConnectionToDataBase() throws Errores 
     {
         try
         {
@@ -165,7 +196,10 @@ public class GestionBD {
         }
         catch(SQLException e)
         {
-            System.out.println("\nNo se ha podido cerrar la conexión");
+            GestionErrores.escribirMensaje(e.getMessage());
+            
+            throw new Errores(GestionErrores.errorBD);
+            //System.out.println("\nNo se ha podido cerrar la conexión");
         }
         
     }
@@ -177,7 +211,7 @@ public class GestionBD {
     
     //metodo que crea y devuelve un statement sensitivo, que nos permite
     //desplazarnos por el ResultSet y actualizar los datos
-    public static Statement getSensitiveStatement()
+    public static Statement getSensitiveStatement() throws Errores
     {
         Statement stmt = null;
         
@@ -188,7 +222,10 @@ public class GestionBD {
         }
         catch(SQLException ex)
         {
-            System.out.println("\nError al crear el statement");
+            //System.out.println("\nError al crear el statement");
+            GestionErrores.escribirMensaje(ex.getMessage());
+            
+            throw new Errores(GestionErrores.errorDatos);
         }
          
          return stmt;

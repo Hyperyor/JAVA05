@@ -5,6 +5,7 @@
  */
 package Modelo;
 
+import Controlador.Errores;
 import Controlador.GestionParticipantes;
 import java.util.ArrayList;
 
@@ -28,7 +29,7 @@ public class ConsultasParticipantes {
         listadoParticipantes = new ArrayList<Participante>();
     }
     
-    public ArrayList<Participante> getListado(Libro l)
+    public ArrayList<Participante> getListado(Libro l) throws Errores
     {
         gestPartic.prepararStamenet(obtenerParticipantesLibro);
         listadoParticipantes = gestPartic.getListadoParticipantes(l.getIsbn());
@@ -36,7 +37,7 @@ public class ConsultasParticipantes {
         return listadoParticipantes;
     }
     
-    public int insertarParticipante(Participante p)
+    public int insertarParticipante(Participante p) throws Errores
     {
         gestPartic = new GestionParticipantes();
         gestPartic.prepararStamenet(insertarParticipante);

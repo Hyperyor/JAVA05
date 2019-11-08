@@ -5,8 +5,10 @@
  */
 package Modelo;
 
+import Controlador.Errores;
 import Controlador.GestionAutores;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -20,15 +22,17 @@ public class ConsultasAutor {
     
     private GestionAutores gestionAut;
     
-    public ConsultasAutor()
+    public ConsultasAutor() throws Errores
     {
         listadoAutores = new ArrayList<Autor>();
         gestionAut = new GestionAutores();
     }
     
-    public ArrayList<Autor> getListadoAutores()
+    public ArrayList<Autor> getListadoAutores() throws Errores
     {
+        
         listadoAutores = gestionAut.cargarDatosAutores(obtenerAutores);
+
         return listadoAutores;
     }
     

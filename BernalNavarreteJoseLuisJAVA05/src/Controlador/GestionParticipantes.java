@@ -23,12 +23,12 @@ public class GestionParticipantes {
         
     }
     
-    public void prepararStamenet(String query)
+    public void prepararStamenet(String query) throws Errores
     {
         statement = GestionBD.getPreparedStatement(query);
     }
     
-    public int insertarElemento(Participante p)
+    public int insertarElemento(Participante p) throws Errores
     {
         try
         {
@@ -50,12 +50,15 @@ public class GestionParticipantes {
         }
         catch(SQLException ex)
         {
-            System.out.println("\n" + ex.getMessage());
-            return 0;
+            GestionErrores.escribirMensaje(ex.getMessage());
+            
+            throw new Errores(GestionErrores.errorInsercion);
+//            System.out.println("\n" + ex.getMessage());
+//            return 0;
         }
     }
     
-    public ArrayList<Participante> getListadoParticipantes(String isbn)
+    public ArrayList<Participante> getListadoParticipantes(String isbn) throws Errores
     {
         ArrayList<Participante> lista = new ArrayList<Participante>();
         
@@ -87,7 +90,9 @@ public class GestionParticipantes {
         }
         catch(SQLException ex)
         {
+            GestionErrores.escribirMensaje(ex.getMessage());
             
+            throw new Errores(GestionErrores.errorDatos);
         }
         
         return lista;

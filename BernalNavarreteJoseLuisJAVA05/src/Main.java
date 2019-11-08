@@ -104,30 +104,30 @@ public class Main {
 //            
 //        }
 
-        GestionBD.connectToDataBase();
-
-        ConsultasLibros cL = new ConsultasLibros("usuario1");
-        
-        Libro l1 = cL.getFirstBook();
-        
-        System.out.println("\nISBN del libro: " + l1.getIsbn());
-        
-        System.out.println("\nEstamos viendo el primero?: " + cL.isFirstBook());
-        System.out.println("\nEstamos viendo el ultimo?: " + cL.isLastBook());
-        
-        l1 = cL.nextBook();
-        
-        System.out.println("\nISBN del libro: " + l1.getIsbn());
-        
-        System.out.println("\nEstamos viendo el primero?: " + cL.isFirstBook());
-        System.out.println("\nEstamos viendo el ultimo?: " + cL.isLastBook());
-        
-        l1 = cL.nextBook();
-        
-        System.out.println("\nISBN del libro: " + l1.getIsbn());
-        
-        System.out.println("\nEstamos viendo el primero?: " + cL.isFirstBook());
-        System.out.println("\nEstamos viendo el ultimo?: " + cL.isLastBook());
+//        GestionBD.connectToDataBase();
+//
+//        ConsultasLibros cL = new ConsultasLibros("usuario1");
+//        
+//        Libro l1 = cL.getFirstBook();
+//        
+//        System.out.println("\nISBN del libro: " + l1.getIsbn());
+//        
+//        System.out.println("\nEstamos viendo el primero?: " + cL.isFirstBook());
+//        System.out.println("\nEstamos viendo el ultimo?: " + cL.isLastBook());
+//        
+//        l1 = cL.nextBook();
+//        
+//        System.out.println("\nISBN del libro: " + l1.getIsbn());
+//        
+//        System.out.println("\nEstamos viendo el primero?: " + cL.isFirstBook());
+//        System.out.println("\nEstamos viendo el ultimo?: " + cL.isLastBook());
+//        
+//        l1 = cL.nextBook();
+//        
+//        System.out.println("\nISBN del libro: " + l1.getIsbn());
+//        
+//        System.out.println("\nEstamos viendo el primero?: " + cL.isFirstBook());
+//        System.out.println("\nEstamos viendo el ultimo?: " + cL.isLastBook());
     }
     
 }

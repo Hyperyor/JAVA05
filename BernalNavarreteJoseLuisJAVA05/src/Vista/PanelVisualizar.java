@@ -5,6 +5,8 @@
  */
 package Vista;
 
+import Controlador.Errores;
+import Controlador.GestionErrores;
 import Modelo.ConsultasLibros;
 import Modelo.Libro;
 import com.aeat.valida.Validador;
@@ -52,38 +54,49 @@ public class PanelVisualizar extends javax.swing.JPanel {
     public PanelVisualizar(String usuario, MainWindow princip) {
         initComponents();
         ventanaPrincipal = princip;
-        consulLibros = new ConsultasLibros(usuario);
         
-        libroActual = consulLibros.getFirstBook();
+        try
+        {
+            consulLibros = new ConsultasLibros(usuario);
+        
+            libroActual = consulLibros.getFirstBook();
+            
+            if(libroActual.getIsbn() != null)
+            {
+                panelMensajeVacio.setVisible(false);
+                rellenarDatos(libroActual);
+                controlDeBotones();
+            }
+            else
+            {
+                //panelMensajeVacio.setVisible(true);
+                JOptionPane.showMessageDialog(null, 
+                                    "No existen libros para este usuario", "Biblioteca vacía", 
+                                    JOptionPane.WARNING_MESSAGE);
+
+
+
+                panelDatos.setVisible(false);
+                panelImagen.setVisible(false);
+
+                jButtonAnterior.setEnabled(false);
+                jButtonSiguiente.setEnabled(false);
+
+                this.revalidate();
+                this.repaint();
+
+
+            }
+        }
+        catch(Errores er)
+        {
+            JOptionPane.showMessageDialog(null, 
+                                er.showMessage(), "Carga de datos", 
+                                JOptionPane.ERROR_MESSAGE);
+        }
         
         //si hay al menos un libro
-        if(libroActual.getIsbn() != null)
-        {
-            panelMensajeVacio.setVisible(false);
-            rellenarDatos(libroActual);
-            controlDeBotones();
-        }
-        else
-        {
-            //panelMensajeVacio.setVisible(true);
-            
-            JOptionPane.showMessageDialog(null, 
-                                "No existen libros para este usuario", "Error", 
-                                JOptionPane.ERROR_MESSAGE);
-            
-            
-            
-            panelDatos.setVisible(false);
-            panelImagen.setVisible(false);
-            
-            jButtonAnterior.setEnabled(false);
-            jButtonSiguiente.setEnabled(false);
-            
-            this.revalidate();
-            this.repaint();
-            
-            
-        }
+        
         
         //createFileChooser();
         
@@ -95,29 +108,39 @@ public class PanelVisualizar extends javax.swing.JPanel {
         return consulLibros;
     }
     
-    private void controlDeBotones()
+    private void controlDeBotones() 
     {
-        if(consulLibros.isFirstBook())
+        try
         {
-            jButtonAnterior.setEnabled(false);
-            
-            if(consulLibros.isLastBook())
+            if(consulLibros.isFirstBook())
             {
-                jButtonSiguiente.setEnabled(false);
-            }
-        }
-        else
-        {
-            if(consulLibros.isLastBook())
-            {
-                jButtonSiguiente.setEnabled(false);
+                jButtonAnterior.setEnabled(false);
+
+                if(consulLibros.isLastBook())
+                {
+                    jButtonSiguiente.setEnabled(false);
+                }
             }
             else
             {
-                jButtonAnterior.setEnabled(true);
-                jButtonSiguiente.setEnabled(true);
+                if(consulLibros.isLastBook())
+                {
+                    jButtonSiguiente.setEnabled(false);
+                }
+                else
+                {
+                    jButtonAnterior.setEnabled(true);
+                    jButtonSiguiente.setEnabled(true);
+                }
             }
         }
+        catch(Errores er)
+        {
+            JOptionPane.showMessageDialog(null, 
+                    er.showMessage(), "Error en carga de datos", 
+                    JOptionPane.ERROR_MESSAGE);
+        }
+        
     }
     
     private void rellenarDatos(Libro l)
@@ -169,7 +192,7 @@ public class PanelVisualizar extends javax.swing.JPanel {
         //fileChooser.setVisible(false);
     }
     
-    private void copiarImagenTemporal()
+    private void copiarImagenTemporal() throws Errores
     {
         String ext = FilenameUtils.getExtension(imagenTemporal.getPath());
         //System.out.println("\nExtension: " + ext);
@@ -192,7 +215,8 @@ public class PanelVisualizar extends javax.swing.JPanel {
         }
         catch(IOException ex)
         {
-            
+            GestionErrores.escribirMensaje(ex.getMessage());
+            throw new Errores(GestionErrores.errorCopiaImagen);
         }
         
         
@@ -218,7 +242,7 @@ public class PanelVisualizar extends javax.swing.JPanel {
         return true;
     }
     
-    private void confirmarCambioImagen()
+    private void confirmarCambioImagen() throws Errores
     {
         String ext = FilenameUtils.getExtension(imagenTemporal.getPath());
         //System.out.println("\nExtension: " + ext);
@@ -240,7 +264,8 @@ public class PanelVisualizar extends javax.swing.JPanel {
         }
         catch(IOException ex)
         {
-            
+            GestionErrores.escribirMensaje(ex.getMessage());
+            throw new Errores(GestionErrores.errorCopiaImagen);
         }
     }
     
@@ -464,15 +489,34 @@ public class PanelVisualizar extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonAnteriorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAnteriorActionPerformed
-        libroActual = consulLibros.previousBook();
-        rellenarDatos(libroActual);
-        controlDeBotones();
+        try
+        {
+            libroActual = consulLibros.previousBook();
+            rellenarDatos(libroActual);
+            controlDeBotones();
+        }
+        catch(Errores er)
+        {
+            JOptionPane.showMessageDialog(null, 
+                    er.showMessage(), "Error en carga de datos", 
+                    JOptionPane.ERROR_MESSAGE);
+        }
+        
     }//GEN-LAST:event_jButtonAnteriorActionPerformed
 
     private void jButtonSiguienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSiguienteActionPerformed
-        libroActual = consulLibros.nextBook();
-        rellenarDatos(libroActual);
-        controlDeBotones();
+        try
+        {
+            libroActual = consulLibros.nextBook();
+            rellenarDatos(libroActual);
+            controlDeBotones();
+        }
+        catch(Errores er)
+        {
+            JOptionPane.showMessageDialog(null, 
+                    er.showMessage(), "Error en carga de datos", 
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButtonSiguienteActionPerformed
 
     private void verParticipantesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verParticipantesButtonActionPerformed
@@ -492,9 +536,12 @@ public class PanelVisualizar extends javax.swing.JPanel {
         }
         else
         {
+            Errores er = new Errores(GestionErrores.errorDNIIncorrecto);
+            GestionErrores.escribirMensaje(er.showMessage());
+
             JOptionPane.showMessageDialog(null, 
-                                "DNI incorrecto", "Validacion DNI", 
-                                JOptionPane.WARNING_MESSAGE);
+                                er.showMessage(), "Validacion DNI", 
+                                JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_validarNifButtonActionPerformed
 
@@ -512,7 +559,17 @@ public class PanelVisualizar extends javax.swing.JPanel {
             
             if(imagenTemporal != null)
             {
-                copiarImagenTemporal();
+                try
+                {
+                   copiarImagenTemporal(); 
+                }
+                catch(Errores er)
+                {
+                    JOptionPane.showMessageDialog(null, 
+                                er.showMessage(), "Seleccion imagen", 
+                                JOptionPane.ERROR_MESSAGE);
+                }
+                
             }
 
         }
@@ -524,7 +581,17 @@ public class PanelVisualizar extends javax.swing.JPanel {
         {
             if(imageChanged)
             {
-                confirmarCambioImagen();
+                try
+                {
+                    confirmarCambioImagen();
+                }
+                catch(Errores er)
+                {
+                    JOptionPane.showMessageDialog(null, 
+                                er.showMessage(), "Seleccion imagen", 
+                                JOptionPane.ERROR_MESSAGE);
+                }
+                
             }
             
             if(fechaActualizada)
@@ -532,23 +599,35 @@ public class PanelVisualizar extends javax.swing.JPanel {
                 libroActual.setFechaPublicacion(obtenerNuevaFecha());
             }
             
-            int n = consulLibros.updateBook(libroActual);
+            int n = 0;
             
-            if(n == 1)
+            try
             {
-                JOptionPane.showMessageDialog(null, 
-                                "Actualizacion correcta", "Actualizacion de datos", 
-                                JOptionPane.INFORMATION_MESSAGE);
+                n = consulLibros.updateBook(libroActual);
+                
+                if(n == 1)
+                {
+                    JOptionPane.showMessageDialog(null, 
+                                    "Actualizacion correcta", "Actualizacion de datos", 
+                                    JOptionPane.INFORMATION_MESSAGE);
+                }
             }
-            else
+            catch(Errores er)
             {
                 JOptionPane.showMessageDialog(null, 
-                                "Actualizacion incorrecta", "Actualizacion de datos", 
+                                er.showMessage(), "Actualizacion de datos", 
                                 JOptionPane.ERROR_MESSAGE);
             }
             
+            
             imageChanged = false;
             fechaActualizada = false;
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null, 
+                                    "No hay datos para actualizar", "Actualizacion de datos", 
+                                    JOptionPane.INFORMATION_MESSAGE);
         }
         
         
@@ -569,6 +648,14 @@ public class PanelVisualizar extends javax.swing.JPanel {
         else
         {
             //mostrar error
+            
+            Errores er = new Errores(GestionErrores.errorFechaPosterior);
+            GestionErrores.escribirMensaje(er.showMessage());
+                
+            JOptionPane.showMessageDialog(null, 
+                            er.showMessage(), "Fecha incorrecta", 
+                            JOptionPane.ERROR_MESSAGE);
+            
             this.fechaActualizada=false;
             jDatePickerFechaPubli.getFormattedTextField().setText(""+libroActual.getFechaPublicacion().get(Calendar.DAY_OF_MONTH)+
                                                                 "/"  +(libroActual.getFechaPublicacion().get(Calendar.MONTH)+1)+

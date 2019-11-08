@@ -5,6 +5,8 @@
  */
 package Vista;
 
+import Controlador.Errores;
+import Controlador.GestionErrores;
 import Modelo.ConsultasLibros;
 import Modelo.Libro;
 import com.aeat.valida.Validador;
@@ -90,7 +92,7 @@ public class PanelInsertar extends javax.swing.JPanel {
         
     }
     
-    private void copiarImagenTemporal()
+    private void copiarImagenTemporal() throws Errores
     {
         String ext = FilenameUtils.getExtension(imagenTemporal.getPath());
         
@@ -110,13 +112,14 @@ public class PanelInsertar extends javax.swing.JPanel {
         }
         catch(IOException ex)
         {
-            
+            GestionErrores.escribirMensaje(ex.getMessage());
+            throw new Errores(GestionErrores.errorCopiaImagen);
         }
         
         
     }
     
-    private void confirmarCambioImagen()
+    private void confirmarCambioImagen() throws Errores
     {
         String ext = FilenameUtils.getExtension(imagenTemporal.getPath());
         //System.out.println("\nExtension: " + ext);
@@ -138,7 +141,8 @@ public class PanelInsertar extends javax.swing.JPanel {
         }
         catch(IOException ex)
         {
-            
+            GestionErrores.escribirMensaje(ex.getMessage());
+            throw new Errores(GestionErrores.errorCopiaImagen);
         }
     }
     
@@ -176,6 +180,7 @@ public class PanelInsertar extends javax.swing.JPanel {
                 }
             }
         }
+        
         
         return false;
     }
@@ -216,7 +221,7 @@ public class PanelInsertar extends javax.swing.JPanel {
         return false;
     }
     
-    //falta comprobar que la fecha no sea posterior a la actual
+    
     private boolean fechaCorrecta()
     {
         if(correctDate(jDatePickerFechaPubli.getModel().getDay(), 
@@ -245,6 +250,14 @@ public class PanelInsertar extends javax.swing.JPanel {
         }
         
         //System.out.println("\nLa fecha es posterior a la actual");
+        
+        Errores er = new Errores(GestionErrores.errorFechaPosterior);
+        GestionErrores.escribirMensaje(er.showMessage());
+                
+        JOptionPane.showMessageDialog(null, 
+                        er.showMessage(), "Fecha incorrecta", 
+                        JOptionPane.ERROR_MESSAGE);
+        
         return true;
     }
     
@@ -487,39 +500,54 @@ public class PanelInsertar extends javax.swing.JPanel {
     
     private void jButtonAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAceptarActionPerformed
         
+
         if(datosCorrectos())
         {
             nuevoLibro.setIsbn(jTextFieldISBN.getText());
             nuevoLibro.setNifPrincAutor(jTextFieldNifAutor.getText());
-            
+
             nuevoLibro.setPropietario(user);
-            
+
             nuevoLibro.setTitulo(jTextFieldTitulo.getText());
-            
+
             nuevoLibro.setFechaPublicacion(obtenerNuevaFecha());
-            
+
             nuevoLibro.setPrecio(convertirFloat(jTextFieldPrecio.getText()));
-            
-            confirmarCambioImagen();
-            
+
+            try
+            {
+               confirmarCambioImagen(); 
+            }
+            catch(Errores er)
+            {
+                JOptionPane.showMessageDialog(null, 
+                                er.showMessage(), "Seleccion de imagen", 
+                                JOptionPane.ERROR_MESSAGE);
+            }
+
+
             //insertar en BD
-            int n = pVisualizar.getConsultaLibros().insertBook(nuevoLibro);
-            
-            if(n > 0)
+            try
             {
-                System.out.println("\nTodo ok en la insercion de libro");
+                int n = pVisualizar.getConsultaLibros().insertBook(nuevoLibro);
             }
-            else
+            catch(Errores er)
             {
-                System.out.println("\nAlgo ha fallado en la insercion");
+                JOptionPane.showMessageDialog(null, 
+                                er.showMessage(), "Insercion de datos", 
+                                JOptionPane.ERROR_MESSAGE);
             }
-            
-            
+
         }
+        
         else
         {
-            //error
-            System.out.println("\nError en los datos");
+            Errores er = new Errores(GestionErrores.errorDatosInsertados);
+            GestionErrores.escribirMensaje(er.showMessage());
+            JOptionPane.showMessageDialog(null, 
+                                er.showMessage(), "Insercion de datos", 
+                                JOptionPane.ERROR_MESSAGE);
+            
         }
             
         ventanaPrincipal.cambiarAVisualizar();
@@ -543,7 +571,17 @@ public class PanelInsertar extends javax.swing.JPanel {
             
             if(imagenTemporal != null)
             {
-                copiarImagenTemporal();
+                try
+                {
+                    copiarImagenTemporal();
+                }
+                catch(Errores er)
+                {
+                    JOptionPane.showMessageDialog(null, 
+                                er.showMessage(), "Seleccion de imagen", 
+                                JOptionPane.ERROR_MESSAGE);
+                }
+                
             }
 
         }

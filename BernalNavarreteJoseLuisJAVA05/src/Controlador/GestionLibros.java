@@ -21,14 +21,14 @@ public class GestionLibros {
     
     private boolean queryExecuted;
     
-    public GestionLibros(String query)
+    public GestionLibros(String query) throws Errores
     {
         //preparamos el prepared statement
         libroStatement = GestionBD.getPreparedStatement(query);
         queryExecuted = false;
     }
     
-    public Libro getFirstBook(String usuario)
+    public Libro getFirstBook(String usuario) throws Errores
     {
         Libro l = null;
         
@@ -47,7 +47,7 @@ public class GestionLibros {
         return l;
     }
     
-    private Libro firstBook()
+    private Libro firstBook() throws Errores
     {
         Libro l = new Libro();
         
@@ -64,13 +64,15 @@ public class GestionLibros {
         }
         catch(SQLException ex)
         {
+            GestionErrores.escribirMensaje(ex.getMessage());
             
+            throw new Errores(GestionErrores.errorDatos);
         }
         
         return l;
     }
     
-    public Libro executeQuery(String usuario)
+    public Libro executeQuery(String usuario) throws Errores
     {
         Libro l = new Libro();
         
@@ -86,14 +88,16 @@ public class GestionLibros {
         }
         catch(SQLException ex)
         {
+            GestionErrores.escribirMensaje(ex.getMessage());
             
+            throw new Errores(GestionErrores.errorDatos);
         }
         
         return l;
         
     }
     
-    private Libro getData()
+    private Libro getData() throws Errores
     {
         Libro l = new Libro();
         
@@ -117,14 +121,16 @@ public class GestionLibros {
         }
         catch(SQLException ex)
         {
+            GestionErrores.escribirMensaje(ex.getMessage());
             
+            throw new Errores(GestionErrores.errorDatos);
         }
         
         return l;
         
     }
     
-    public Libro getNextBook()
+    public Libro getNextBook() throws Errores
     {
         Libro l = new Libro();
         
@@ -138,14 +144,16 @@ public class GestionLibros {
         }
         catch(SQLException ex)
         {
+            GestionErrores.escribirMensaje(ex.getMessage());
             
+            throw new Errores(GestionErrores.errorDatos);
         }
         
         return l;
     }
     
     
-    public Libro getPreviousBook()
+    public Libro getPreviousBook() throws Errores
     {
         Libro l = new Libro();
         
@@ -159,13 +167,15 @@ public class GestionLibros {
         }
         catch(SQLException ex)
         {
+            GestionErrores.escribirMensaje(ex.getMessage());
             
+            throw new Errores(GestionErrores.errorDatos);
         }
         
         return l;
     }
     
-    public boolean isFirstBook()
+    public boolean isFirstBook() throws Errores
     {
         Libro l = new Libro();
         
@@ -179,13 +189,15 @@ public class GestionLibros {
         }
         catch(SQLException ex)
         {
+            GestionErrores.escribirMensaje(ex.getMessage());
             
+            throw new Errores(GestionErrores.errorDatos);
         }
         
         return false;
     }
     
-    public boolean isLastBook()
+    public boolean isLastBook() throws Errores
     {
         Libro l = new Libro();
         
@@ -199,13 +211,15 @@ public class GestionLibros {
         }
         catch(SQLException ex)
         {
+            GestionErrores.escribirMensaje(ex.getMessage());
             
+            throw new Errores(GestionErrores.errorDatos);
         }
         
         return false;
     }
     
-    public int updateBook(Libro l)
+    public int updateBook(Libro l) throws Errores
     {
         try
         {
@@ -221,13 +235,16 @@ public class GestionLibros {
         }
         catch(SQLException ex)
         {
-            return 0;
+            GestionErrores.escribirMensaje(ex.getMessage());
+            
+            throw new Errores(GestionErrores.errorActualizacion);
+            //return 0;
         }
         
         return 1;
     }
     
-    public int insertarLibro(Libro l)
+    public int insertarLibro(Libro l) throws Errores
     {
 
         try
@@ -260,7 +277,10 @@ public class GestionLibros {
         catch(SQLException ex)
         {
             //System.out.println("\nError 111");
-            return 0;
+            //return 0;
+            GestionErrores.escribirMensaje(ex.getMessage());
+            
+            throw new Errores(GestionErrores.errorInsercion);
         }
     }
     

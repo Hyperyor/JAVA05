@@ -5,6 +5,7 @@
  */
 package Vista;
 
+import Controlador.Errores;
 import Modelo.Autor;
 import Modelo.ConsultasAutor;
 import Modelo.ConsultasParticipantes;
@@ -51,14 +52,24 @@ public class VerParticipantes extends javax.swing.JDialog {
         
         consulPartic = new ConsultasParticipantes();
         
-        listadoParticipantes = consulPartic.getListado(libroActual);
+        try
+        {
+            listadoParticipantes = consulPartic.getListado(libroActual);
+        }
+        catch(Errores er)
+        {
+            JOptionPane.showMessageDialog(null, 
+                                er.showMessage(), "Error", 
+                                JOptionPane.ERROR_MESSAGE);
+        }
+        
         
         model = (DefaultTableModel) jTableDatosParticipantes.getModel();
         
         if(listadoParticipantes.isEmpty())
         {
             JOptionPane.showMessageDialog(null, 
-                                "No hay participantes", "Error", 
+                                "No hay participantes", "Listado de participantes", 
                                 JOptionPane.WARNING_MESSAGE);
         }
         else
@@ -121,36 +132,47 @@ public class VerParticipantes extends javax.swing.JDialog {
     
     private ArrayList<Autor> getListaAutoresDisponibles()
     {
-        ConsultasAutor consAut = new ConsultasAutor();
-        
-        ArrayList<Autor> listadoAutoresCompleto = consAut.getListadoAutores();
-        
-        ArrayList<Autor> listaAutoresDisponibles = new ArrayList<Autor>();
-        
-        boolean contiene = false;
-        
-        for (int i = 0; i < listadoAutoresCompleto.size(); i++) 
+        try
         {
-            
-            for (int j = 0; j < listadoParticipantes.size(); j++) 
+            ConsultasAutor consAut = new ConsultasAutor();
+        
+            ArrayList<Autor> listadoAutoresCompleto = consAut.getListadoAutores();
+
+            ArrayList<Autor> listaAutoresDisponibles = new ArrayList<Autor>();
+
+            boolean contiene = false;
+
+            for (int i = 0; i < listadoAutoresCompleto.size(); i++) 
             {
-                if(listadoParticipantes.get(j).getCodigoAutor() == listadoAutoresCompleto.get(i).getCodigo())
+
+                for (int j = 0; j < listadoParticipantes.size(); j++) 
                 {
-                    contiene = true; 
-                    break;
+                    if(listadoParticipantes.get(j).getCodigoAutor() == listadoAutoresCompleto.get(i).getCodigo())
+                    {
+                        contiene = true; 
+                        break;
+                    }
+
                 }
-                
+
+                if(!contiene)
+                {
+                    listaAutoresDisponibles.add(listadoAutoresCompleto.get(i));
+                }
+
+                contiene = false;
             }
-            
-            if(!contiene)
-            {
-                listaAutoresDisponibles.add(listadoAutoresCompleto.get(i));
-            }
-            
-            contiene = false;
+
+            return listaAutoresDisponibles;
+        }
+        catch(Errores er)
+        {
+            JOptionPane.showMessageDialog(null, 
+                                er.showMessage(), "Error", 
+                                JOptionPane.ERROR_MESSAGE);
         }
         
-        return listaAutoresDisponibles;
+        return new ArrayList<Autor>();
     }
     
     public void insertarElemento(int indice)
@@ -171,20 +193,26 @@ public class VerParticipantes extends javax.swing.JDialog {
         p.setBeneficio(num);
 
         //insertamos la nueva fila en la BD
-        int n = consulPartic.insertarParticipante(p);
-        
-        if(n != 0)
+        try
         {
+            int n = consulPartic.insertarParticipante(p);
+        
+        
             //aniadimos el participante a la lista
             listadoParticipantes.add(p);
             //reseteamos el jtable
             resetTable();
             cargarDatos();
+        
         }
-        else
+        catch(Errores er)
         {
-            //error al insertar nuevo elemento
+            JOptionPane.showMessageDialog(null, 
+                                er.showMessage(), "Error", 
+                                JOptionPane.ERROR_MESSAGE);
         }
+        
+       
         
         //System.out.println("\nResultado de la insercion: " + n);
     }

@@ -5,6 +5,7 @@
  */
 package Modelo;
 
+import Controlador.Errores;
 import Controlador.GestionLibros;
 
 /**
@@ -21,20 +22,20 @@ public class ConsultasLibros {
     
     private String usuarioActual = null;
     
-    public ConsultasLibros(String user)
+    public ConsultasLibros(String user) throws Errores
     {
         gestionLibs = new GestionLibros(obtenerLibrosDeUsuario);
         usuarioActual = user;
     }
     
-    public int updateBook(Libro l)
+    public int updateBook(Libro l) throws Errores
     {
         int n = gestionLibs.updateBook(l);
         
         return n;
     }
     
-    public Libro getFirstBook()
+    public Libro getFirstBook() throws Errores
     {
 
         libroActual = gestionLibs.getFirstBook(usuarioActual);
@@ -43,17 +44,17 @@ public class ConsultasLibros {
         return libroActual;
     }
     
-    public boolean isFirstBook()
+    public boolean isFirstBook() throws Errores
     {
         return gestionLibs.isFirstBook();
     }
     
-    public boolean isLastBook()
+    public boolean isLastBook() throws Errores
     {
         return gestionLibs.isLastBook();
     }
     
-    public Libro nextBook()
+    public Libro nextBook() throws Errores
     {
 
         libroActual = gestionLibs.getNextBook();
@@ -61,7 +62,7 @@ public class ConsultasLibros {
         return libroActual;
     }
     
-    public Libro previousBook()
+    public Libro previousBook() throws Errores
     {
 
         libroActual = gestionLibs.getPreviousBook();
@@ -69,7 +70,7 @@ public class ConsultasLibros {
         return libroActual;
     }
     
-    public int insertBook(Libro l)
+    public int insertBook(Libro l) throws Errores
     {
         return gestionLibs.insertarLibro(l);
     }

@@ -1,6 +1,7 @@
  
 package Vista;
 
+import Controlador.Errores;
 import Controlador.GestionBD;
 import java.awt.Color;
 import javax.swing.JOptionPane;
@@ -144,20 +145,26 @@ public class PanelConexion extends javax.swing.JPanel {
 
     private void jButtonAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAceptarActionPerformed
         
-        if(GestionBD.validateConnection(jTextFieldUsuario.getText(), jTextFieldContraseña.getText()))
+        try
         {
-            JOptionPane.showMessageDialog(null, 
+            if(GestionBD.validateConnection(jTextFieldUsuario.getText(), jTextFieldContraseña.getText()))
+            {
+                JOptionPane.showMessageDialog(null, 
                                 "Conexion realizada con exito", "Conexion correcta", 
                                 JOptionPane.INFORMATION_MESSAGE);
-            venP.conexionRealizada(jTextFieldUsuario.getText());
+                venP.conexionRealizada(jTextFieldUsuario.getText());
+            }
+//            else
+//            {
+//                System.out.println("\nDevuelve false");
+//            }
+            
         }
-        else
+        catch(Errores er)
         {
             JOptionPane.showMessageDialog(null, 
-                                "El usuario o la contraseña son incorrectos", "Error", 
-                                JOptionPane.WARNING_MESSAGE);
-           
-            
+                                er.showMessage(), "Error", 
+                                JOptionPane.ERROR_MESSAGE);
         }
         
         reset();

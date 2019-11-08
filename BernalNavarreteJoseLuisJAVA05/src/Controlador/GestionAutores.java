@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -20,12 +21,13 @@ public class GestionAutores {
     private ResultSet rSet;
     private Statement stmt;
     
-    public GestionAutores()
-    {
+    public GestionAutores() throws Errores
+    {    
         stmt = GestionBD.getSensitiveStatement();
+
     }
     
-    public ArrayList<Autor> cargarDatosAutores(String query)
+    public ArrayList<Autor> cargarDatosAutores(String query) throws Errores
     {
         ArrayList<Autor> listado = new ArrayList<Autor>();
         
@@ -47,7 +49,9 @@ public class GestionAutores {
         }
         catch(SQLException ex)
         {
+            GestionErrores.escribirMensaje(ex.getMessage());
             
+            throw new Errores(GestionErrores.errorDatos);
         }
         
         return listado;

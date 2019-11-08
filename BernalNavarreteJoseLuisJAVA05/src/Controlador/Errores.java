@@ -11,22 +11,16 @@ package Controlador;
  */
 public class Errores extends Exception{
     
-    private int errorNumber;
-    private String exceptionMessage;
+    private int error;
     
     public Errores(int n)
     {
-        errorNumber = n;
+        error = n;
     }
     
-    public Errores(String cad)
+    public String showMessage()
     {
-        exceptionMessage = cad;
-    }
-    
-    public void showMessage(int n)
-    {
-        
+        return GestionErrores.getMensajeError(error);
     }
     
 }
